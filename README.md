@@ -165,3 +165,6 @@ Los mensajes de commit deben ser claros y descriptivos. Imagina que alguien más
 ```bash
 git add .
 git commit -m "Agrega función para calcular total en carrito"
+
+
+hola soy valente y me gusta el

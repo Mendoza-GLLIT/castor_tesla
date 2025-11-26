@@ -111,7 +111,7 @@ class MantenimientoActivo(Base):
     activo = relationship("ActivoFijo", back_populates="mantenimientos")
 
 # CONEXIÓN
-engine = create_engine("postgresql://postgres:160603@localhost:5432/CastorTesla")
+engine = create_engine("postgresql://postgres:1234@localhost:5432/CastorTesla")
 
 # CREAR TABLAS
 Base.metadata.create_all(engine)
