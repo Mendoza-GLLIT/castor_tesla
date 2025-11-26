@@ -4,65 +4,63 @@
 
 Este es un sistema integral de gestión de inventario y Punto de Venta diseñado para ofrecer una experiencia de usuario moderna, fluida y eficiente. Desarrollado con **Python** y **Qt (QML)**, el sistema permite administrar productos, realizar ventas en tiempo real y visualizar historiales de transacciones de manera intuitiva.
 
-El proyecto sigue una arquitectura **MVC (Modelo-Vista-Controlador)** estricta, separando la lógica de negocio, la gestión de datos y la interfaz gráfica para garantizar un código limpio, escalable y fácil de mantener.
+El proyecto sigue una arquitectura **MVC (Modelo-Vista-Controlador)** estricta, separando la lógica de negocio, la gestión de datos y la interfaz gráfica para garantizar un código limpio y escalable.
 
 ---
 
 ## 🚀 Tecnologías Utilizadas
 
-El núcleo del sistema combina la potencia de Python con la flexibilidad visual de QML y la robustez de PostgreSQL.
-
 * **Lenguaje:** Python 3.10+
 * **Interfaz Gráfica (GUI):** [PySide6](https://pypi.org/project/PySide6/) (Qt for Python) con **QML**.
 * **Base de Datos:** PostgreSQL.
 * **ORM y Conectores:** SQLAlchemy y Psycopg2.
-* **Arquitectura:** MVC (Model-View-Controller).
+* **Arquitectura:** MVC.
 
-### 📂 Estructura del Proyecto
-El código está organizado para mantener el orden y la modularidad:
+---
 
+## 📂 Estructura del Proyecto
 
+```text
 CastorTesla/
 │
-├── main.py                 #  Punto de entrada principal (Ejecutar este archivo)
-├── crear_usuarios.py       #  Script de utilidad para generar usuarios/roles iniciales
-├── requirements.txt        #  Lista de librerías necesarias (pip install -r ...)
-├── README.md               # Documentación del proyecto
+├── main.py                 # 🏁 Punto de entrada principal (Ejecutar este archivo)
+├── crear_usuarios.py       # 🛠️ Script de utilidad (Root)
+├── requirements.txt        # 📦 Lista de librerías necesarias
+├── README.md               # 📄 Documentación del proyecto
 │
 └── src/
-    ├── controllers/        # Lógica de Negocio (Python)
+    ├── controllers/        # 🧠 Lógica de Negocio (Python)
     │   ├── controller.py       # Controlador principal (Login y Navegación)
     │   └── pos_controller.py   # Controlador del Punto de Venta (Cálculos y Venta)
     │
-    ├── models/             # Modelos de Datos (QAbstractListModel)
+    ├── models/             # 📊 Modelos de Datos (QAbstractListModel)
     │   ├── cart_model.py       # Modelo dinámico para el carrito de compras
-    │   ├── sales_model.py      # Modelo para el historial de ventas (con detalles)
+    │   ├── sales_model.py      # Modelo para el historial de ventas
     │   └── models.py           # Modelo general de productos (Inventario)
     │
-    ├── database/           # Base de Datos
-    │   ├── Create_tables.py  
-    │   ├── Create_users.py 
-    │   ├── insert_products.py     
+    ├── database/           # 🗄️ Base de Datos
+    │   ├── Create_tables.py    # Script para crear tablas
+    │   ├── Create_users.py     # Script para crear usuarios
+    │   ├── insert_products.py  # Script para llenar inventario inicial
     │   └── database.py         # Conexión a PostgreSQL y consultas SQL
     │
-    ├── resources/          #  Recursos Gráficos
-    │   ├── icons/              # Iconos para el menú (dashboard, box, shopping-cart...)
-    │   ├── logo.png            # Logotipo de la empresa
-    │   └── profile.png         # Imagen de perfil por defecto
+    ├── resources/          # 🎨 Recursos Gráficos
+    │   ├── icons/              # Iconos del menú
+    │   ├── logo.png            # Logotipo
+    │   └── profile.png         # Imagen de perfil
     │
-    └── ui/                 #  Interfaz de Usuario (QML)
+    └── ui/                 # 🖥️ Interfaz de Usuario (QML)
         ├── login.qml           # Pantalla de Inicio de Sesión
         ├── sidebar.qml         # Menú lateral de navegación
-        ├── SidebarButton.qml   # Componente personalizado para botones del menú
+        ├── SidebarButton.qml   # Componente personalizado de botón
         │
-        └── views/          #  Vistas de la Aplicación
+        └── views/          # 📑 Vistas de la Aplicación
             ├── pos.qml             # Pantalla de Punto de Venta (Cobrar)
-            ├── sales.qml           # Pantalla de Historial de Ventas (Tabla)
-            ├── inventory.qml       # Pantalla de Inventario de Productos
-            ├── schedule.qml        # (Placeholder) Vista de Agenda
-            ├── messages.qml        # (Placeholder) Vista de Mensajes
-            └── settings.qml        # (Placeholder) Vista de Configuración
-
+            ├── sales.qml           # Pantalla de Historial de Ventas
+            ├── inventory.qml       # Pantalla de Inventario
+            ├── schedule.qml        # Agenda (Placeholder)
+            ├── messages.qml        # Mensajes (Placeholder)
+            └── settings.qml        # Configuración (Placeholder)
 
 
 ⚙️ Guía de Instalación y Despliegue
