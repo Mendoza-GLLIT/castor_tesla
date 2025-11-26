@@ -21,23 +21,47 @@ El núcleo del sistema combina la potencia de Python con la flexibilidad visual 
 ### 📂 Estructura del Proyecto
 El código está organizado para mantener el orden y la modularidad:
 
-```text
+
 CastorTesla/
 │
-├── main.py                 # Punto de entrada (Entry Point)
-├── requirements.txt        # Dependencias del proyecto
-├── src/
-│   ├── controllers/        # Lógica de negocio (Puente entre UI y BD)
-│   │   ├── controller.py       # Navegación y Login
-│   │   └── pos_controller.py   # Lógica de Ventas y Carrito
-│   ├── models/             # Modelos de datos para QML (QAbstractListModel)
-│   │   ├── cart_model.py       # Modelo dinámico del carrito
-│   │   ├── sales_model.py      # Modelo de historial de ventas
-│   │   └── models.py           # Modelos generales
-│   ├── database/           # Conexión y consultas SQL (PostgreSQL)
-│   ├── ui/                 # Vistas QML (Interfaz de Usuario)
-│   │   ├── views/              # Pantallas (POS, Sales, Inventory)
-│   │   └── resources/          # Assets (Iconos, Imágenes)
+├── main.py                 #  Punto de entrada principal (Ejecutar este archivo)
+├── crear_usuarios.py       #  Script de utilidad para generar usuarios/roles iniciales
+├── requirements.txt        #  Lista de librerías necesarias (pip install -r ...)
+├── README.md               # Documentación del proyecto
+│
+└── src/
+    ├── controllers/        # Lógica de Negocio (Python)
+    │   ├── controller.py       # Controlador principal (Login y Navegación)
+    │   └── pos_controller.py   # Controlador del Punto de Venta (Cálculos y Venta)
+    │
+    ├── models/             # Modelos de Datos (QAbstractListModel)
+    │   ├── cart_model.py       # Modelo dinámico para el carrito de compras
+    │   ├── sales_model.py      # Modelo para el historial de ventas (con detalles)
+    │   └── models.py           # Modelo general de productos (Inventario)
+    │
+    ├── database/           # Base de Datos
+    │   ├── Create_tables.py  
+    │   ├── Create_users.py 
+    │   ├── insert_products.py     
+    │   └── database.py         # Conexión a PostgreSQL y consultas SQL
+    │
+    ├── resources/          #  Recursos Gráficos
+    │   ├── icons/              # Iconos para el menú (dashboard, box, shopping-cart...)
+    │   ├── logo.png            # Logotipo de la empresa
+    │   └── profile.png         # Imagen de perfil por defecto
+    │
+    └── ui/                 #  Interfaz de Usuario (QML)
+        ├── login.qml           # Pantalla de Inicio de Sesión
+        ├── sidebar.qml         # Menú lateral de navegación
+        ├── SidebarButton.qml   # Componente personalizado para botones del menú
+        │
+        └── views/          #  Vistas de la Aplicación
+            ├── pos.qml             # Pantalla de Punto de Venta (Cobrar)
+            ├── sales.qml           # Pantalla de Historial de Ventas (Tabla)
+            ├── inventory.qml       # Pantalla de Inventario de Productos
+            ├── schedule.qml        # (Placeholder) Vista de Agenda
+            ├── messages.qml        # (Placeholder) Vista de Mensajes
+            └── settings.qml        # (Placeholder) Vista de Configuración
 
 
 
@@ -82,3 +106,64 @@ Usuarios de prueba:
     password: 23310012
     user: Dulce
     password: 23310004
+
+
+
+## 🤝 Guía de Contribución y Flujo de Trabajo Git
+
+Para mantener el orden en el proyecto y evitar conflictos en el código, seguimos estas reglas estrictas de control de versiones.
+
+### 🚫 Regla de Oro
+**NUNCA trabajar directamente sobre la rama `main`.**
+La rama `main` es sagrada; solo debe contener código funcional y probado.
+
+---
+
+### 🔀 1. Estrategia de Ramas (Branches)
+
+Cada nueva funcionalidad, corrección o experimento debe realizarse en su propia rama personal.
+
+**Convención de Nombres:**
+Usa el formato: `tipo/nombre-descriptivo`
+
+* **`feature/`**: Para nuevas funcionalidades (ej: `feature/login-screen`, `feature/tabla-ventas`).
+* **`fix/`**: Para arreglar errores (ej: `fix/error-calculo-iva`).
+* **`docs/`**: Para cambios en documentación (ej: `docs/actualizar-readme`).
+* **`refactor/`**: Para mejorar código sin cambiar funcionalidad.
+
+**Cómo crear tu rama:**
+1.  Asegúrate de estar en `main` y actualizado:
+    ```bash
+    git checkout main
+    git pull origin main
+    ```
+2.  Crea tu rama y cámbiate a ella:
+    ```bash
+    git checkout -b feature/mi-nueva-funcionalidad
+    ```
+
+---
+
+### 📝 2. Reglas para Commits
+
+Los mensajes de commit deben ser claros y descriptivos. Imagina que alguien más leerá tu historial en el futuro.
+
+* **Idioma:** Español o Inglés (pero consistente).
+* **Tiempo:** Usa imperativo presente ("Agrega", "Corrige", "Elimina").
+* **Atomicidad:** Un commit por cada cambio lógico. No hagas un solo commit gigante al final del día.
+
+**✅ Buenos ejemplos:**
+* `Agrega validación de contraseña en Login`
+* `Corrige alineación en la tabla de inventario`
+* `Elimina código muerto en pos_controller.py`
+
+**❌ Malos ejemplos:**
+* `cambios`
+* `arreglando cosas`
+* `final final ahora si`
+* `subiendo código`
+
+**Comando:**
+```bash
+git add .
+git commit -m "Agrega función para calcular total en carrito"

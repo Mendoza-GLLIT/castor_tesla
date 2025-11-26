@@ -1,0 +1,37 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+
+# --- Entornos Virtuales (¡MUY IMPORTANTE!) ---
+# Ignora la carpeta donde instalaste las librerías
+env/
+venv/
+.venv/
+ids/
+
+# --- Distribución y Builds ---
+build/
+dist/
+*.spec
+
+# --- PySide6 / Qt / QML ---
+*.qmlc
+*.jsc
+cache/
+
+# --- Configuración de IDEs (Opcional pero recomendado) ---
+.vscode/
+.idea/
+*.swp
+
+# --- Archivos del Sistema Operativo (Basura de Windows/Mac) ---
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# --- Logs y Errores ---
+*.log
+
+# --- Archivos locales o secretos (Si usaras variables de entorno) ---
+.env
