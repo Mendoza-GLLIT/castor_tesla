@@ -1,11 +1,11 @@
 import psycopg2
-
+from datetime import datetime
 
 def get_db_connection():
     return psycopg2.connect(
         dbname="CastorTesla",
         user="postgres",
-        password="1234",
+        password="1234", # ⚠️ RECUERDA: Cambia esto por tu contraseña real
         host="localhost",
         port="5432"
     )
@@ -47,20 +47,32 @@ def check_user_login(user_email, password):
         conn = get_db_connection()
         cur = conn.cursor()
 
+        # Query modificada para obtener datos del usuario y su rol
         query = """
-            SELECT id_usuario 
-            FROM "USUARIO" 
-            WHERE email = %s AND password = %s
+            SELECT u.id_usuario, u.nombre, u.apellido, r.nombre_rol
+            FROM "USUARIO" u
+            JOIN "ROL" r ON u.id_rol = r.id_rol
+            WHERE u.email = %s AND u.password = %s
         """
         cur.execute(query, (user_email, password))
 
-        result = cur.fetchone()
+        row = cur.fetchone()
         conn.close()
 
-        return True if result else False
+        if row:
+            # Retornamos un diccionario con la info útil para la UI
+            return {
+                "id": row[0],
+                "nombre": row[1],
+                "apellido": row[2],
+                "rol": row[3]
+            }
 
-    except Exception:
-        return False
+        return None
+
+    except Exception as e:
+        print(f"Error DB Login: {e}")
+        return None
 
 
 def get_product_by_code(code):

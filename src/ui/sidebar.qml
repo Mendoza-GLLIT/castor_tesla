@@ -135,7 +135,8 @@ Rectangle {
                     
                     Label {
                         anchors.centerIn: parent
-                        text: "EM"
+                        // Muestra las primeras 2 letras del nombre si no carga la imagen
+                        text: Controller.userName ? Controller.userName.substring(0, 2).toUpperCase() : "??"
                         color: "white"
                         visible: parent.children[0].status !== Image.Ready
                     }
@@ -144,14 +145,18 @@ Rectangle {
                 ColumnLayout {
                     Layout.fillWidth: true
                     spacing: 2
+                    
+                    // Nombre dinámico desde Python
                     Label {
-                        text: "Emmanuel M."
+                        text: Controller.userName 
                         font.pixelSize: 14
                         font.bold: true
                         color: "white"
                     }
+                    
+                    // Rol dinámico desde Python
                     Label {
-                        text: "Administrador"
+                        text: Controller.userRole
                         font.pixelSize: 11
                         color: "#9CA3AF"
                     }
@@ -162,7 +167,7 @@ Rectangle {
                     cursorShape: Qt.PointingHandCursor
                     Image {
                         anchors.fill: parent
-                        source: "../../resources/icons/logout.png"
+                        source: "../../resources/logout.png"
                         opacity: 0.6
                         fillMode: Image.PreserveAspectFit
                     }
@@ -173,7 +178,12 @@ Rectangle {
                         anchors.centerIn: parent
                         visible: parent.children[0].status !== Image.Ready
                     }
-                    onClicked: console.log("Cerrar sesión")
+                    
+                    // Acción de cerrar sesión conectada
+                    onClicked: {
+                        console.log("Cerrando sesión...")
+                        Controller.logout()
+                    }
                 }
             }
         }
