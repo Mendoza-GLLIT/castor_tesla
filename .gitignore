@@ -35,3 +35,7 @@ Desktop.ini
 
 # --- Archivos locales o secretos (Si usaras variables de entorno) ---
 .env
+
+# --- Generacion de archivos... ---
+bdd_mendoza/
+bdd_valente/

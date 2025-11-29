@@ -1,6 +1,6 @@
 import os
 from PySide6.QtCore import QObject, Slot, Signal, Property
-from src.database.database import check_user_login
+from src.database.user_repo import check_user_login
 
 class Controller(QObject):
     # Señales para notificar cambios en la UI

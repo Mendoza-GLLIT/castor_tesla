@@ -175,20 +175,22 @@ Item {
                                 anchors.fill: parent
                                 spacing: 0
 
+                                // 1. CÓDIGO
                                 Label { 
-                                    text: codigo
+                                    text: model.codigo 
                                     font.pixelSize: 14; font.weight: Font.Medium; color: textDark
                                     Layout.preferredWidth: 1.5; Layout.fillWidth: true
                                     Layout.alignment: Qt.AlignVCenter
                                     leftPadding: 16; elide: Text.ElideRight
                                 }
                                 
+                                // 2. NOMBRE
                                 Column {
                                     Layout.preferredWidth: 3; Layout.fillWidth: true
                                     Layout.alignment: Qt.AlignVCenter
                                     leftPadding: 16 
                                     Label { 
-                                        text: nombre
+                                        text: model.nombre
                                         font.pixelSize: 14; font.weight: Font.Medium; color: textDark
                                         width: parent.width - 32; elide: Text.ElideRight 
                                     }
@@ -199,6 +201,7 @@ Item {
                                     }
                                 }
 
+                                // 3. DESCRIPCIÓN
                                 Label { 
                                     text: model.descripcion ? model.descripcion : "Sin descripción" 
                                     font.pixelSize: 13; color: textMedium
@@ -207,14 +210,16 @@ Item {
                                     leftPadding: 16; elide: Text.ElideRight
                                 }
 
+                                // 4. PRECIO
                                 Label { 
-                                    text: precio
+                                    text: model.precio
                                     font.pixelSize: 14; font.weight: Font.Medium; color: textDark
                                     Layout.preferredWidth: 1.5; Layout.fillWidth: true
                                     horizontalAlignment: Text.AlignRight; Layout.alignment: Qt.AlignVCenter 
                                     rightPadding: 16
                                 }
                                 
+                                // 5. STOCK
                                 RowLayout {
                                     Layout.preferredWidth: 1.5; Layout.fillWidth: true
                                     Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
@@ -224,10 +229,11 @@ Item {
                                     Item { Layout.fillWidth: true }
                                     Rectangle { 
                                         width: 8; height: 8; radius: 4
-                                        color: stock > 10 ? "#10B981" : (stock > 0 ? "#F59E0B" : "#EF4444") 
+                                        // Aquí estaba el error principal, faltaba 'model.'
+                                        color: model.stock > 10 ? "#10B981" : (model.stock > 0 ? "#F59E0B" : "#EF4444") 
                                     }
                                     Label { 
-                                        text: stock + " un."
+                                        text: model.stock + " un."
                                         font.pixelSize: 14; font.weight: Font.Medium; color: textDark 
                                         rightPadding: 16
                                     }
