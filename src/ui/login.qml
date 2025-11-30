@@ -2,11 +2,20 @@ import QtQuick
 import QtQuick.Controls
 
 ApplicationWindow {
+    id: loginWindow
     width: 960
     height: 600
     visible: true
-    title: qsTr("Login")
+    title: qsTr("Login - Castor Tesla")
     color: "#0a0f24"
+
+    // Cuando la ventana carga, si hay un email guardado, lo ponemos en el campo
+    Component.onCompleted: {
+        if (auth.savedEmail !== "") {
+            userInput.text = auth.savedEmail
+            rememberCheck.checked = true
+        }
+    }
 
     Rectangle {
         id: leftPanel
@@ -62,9 +71,10 @@ ApplicationWindow {
                 anchors.horizontalCenter: parent.horizontalCenter
             }
 
+            // CAMPO USUARIO / EMAIL
             TextField {
                 id: userInput
-                placeholderText: qsTr("Usuario")
+                placeholderText: qsTr("Email o Usuario") // Actualizado
                 placeholderTextColor: "#aaaaaa"
                 color: "white"
                 width: parent.width
@@ -79,6 +89,7 @@ ApplicationWindow {
                 onAccepted: passwordField.forceActiveFocus()
             }
 
+            // CAMPO CONTRASEÑA
             TextField {
                 id: passwordField
                 placeholderText: qsTr("Contraseña")
@@ -107,12 +118,28 @@ ApplicationWindow {
                 anchors.horizontalCenter: parent.horizontalCenter
             }
 
+            // CHECKBOX RECORDARME
             Row {
                 spacing: 8
                 width: parent.width
                 CheckBox {
                     id: rememberCheck
                     checked: false
+                    
+                    indicator: Rectangle {
+                        implicitWidth: 20
+                        implicitHeight: 20
+                        radius: 4
+                        color: rememberCheck.checked ? "#4facfe" : "transparent"
+                        border.color: "white"
+                        border.width: 1
+                        Text {
+                            anchors.centerIn: parent
+                            text: "✔"
+                            color: "white"
+                            visible: rememberCheck.checked
+                        }
+                    }
                 }
                 Label {
                     text: qsTr("Recordarme")
@@ -122,6 +149,7 @@ ApplicationWindow {
                 }
             }
 
+            // BOTÓN LOGIN
             Button {
                 id: loginBtn
                 width: parent.width
@@ -161,7 +189,9 @@ ApplicationWindow {
                         return
                     }
 
-                    var success = Controller.login(userInput.text, passwordField.text)
+                    // --- LLAMADA AL NUEVO AUTH CONTROLLER ---
+                    // Pasamos usuario, contraseña y el booleano de recordarme
+                    var success = auth.login(userInput.text, passwordField.text, rememberCheck.checked)
                     
                     if (!success) {
                         errorMessage.text = "❌ Usuario o contraseña incorrectos"

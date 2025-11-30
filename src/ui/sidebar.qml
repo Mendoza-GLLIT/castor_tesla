@@ -16,6 +16,7 @@ Rectangle {
         anchors.margins: 20
         spacing: 20
 
+        // CABECERA
         ColumnLayout {
             Layout.fillWidth: true
             spacing: 10
@@ -36,6 +37,7 @@ Rectangle {
             }
         }
 
+        // MENÚ DE NAVEGACIÓN
         ColumnLayout {
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -106,6 +108,7 @@ Rectangle {
             }
         }
 
+        // SECCIÓN DE PERFIL (PIE DE PÁGINA)
         Rectangle {
             Layout.fillWidth: true
             height: 70
@@ -119,6 +122,7 @@ Rectangle {
                 anchors.margins: 12
                 spacing: 12
 
+                // Avatar / Iniciales
                 Rectangle {
                     width: 42
                     height: 42
@@ -127,50 +131,67 @@ Rectangle {
                     clip: true
 
                     Image {
+                        id: profileImg
                         anchors.fill: parent
                         source: "../../resources/profile.png"
                         fillMode: Image.PreserveAspectCrop
+                        // Si falla la carga, limpiamos source para mostrar texto
                         onStatusChanged: if (status === Image.Error) source = "" 
                     }
                     
                     Label {
                         anchors.centerIn: parent
-                        // Muestra las primeras 2 letras del nombre si no carga la imagen
-                        text: Controller.userName ? Controller.userName.substring(0, 2).toUpperCase() : "??"
+                        // Lógica para obtener iniciales: "Emmanuel Mendoza" -> "EM"
+                        text: {
+                            var name = auth.fullName ? auth.fullName : auth.username
+                            if (!name) return "??"
+                            var parts = name.split(" ")
+                            if (parts.length >= 2) {
+                                return (parts[0][0] + parts[1][0]).toUpperCase()
+                            } else {
+                                return name.substring(0, 2).toUpperCase()
+                            }
+                        }
                         color: "white"
-                        visible: parent.children[0].status !== Image.Ready
+                        font.bold: true
+                        visible: profileImg.status !== Image.Ready
                     }
                 }
 
+                // Info del Usuario
                 ColumnLayout {
                     Layout.fillWidth: true
                     spacing: 2
                     
-                    // Nombre dinámico desde Python
                     Label {
-                        text: Controller.userName 
+                        text: auth.fullName !== "" ? auth.fullName : auth.username
                         font.pixelSize: 14
                         font.bold: true
                         color: "white"
+                        elide: Text.ElideRight
+                        Layout.fillWidth: true
                     }
                     
-                    // Rol dinámico desde Python
                     Label {
-                        text: Controller.userRole
+                        text: auth.userRole
                         font.pixelSize: 11
                         color: "#9CA3AF"
                     }
                 }
 
+                // Botón Salir
                 MouseArea {
                     width: 24; height: 24
                     cursorShape: Qt.PointingHandCursor
+                    
                     Image {
                         anchors.fill: parent
-                        source: "../../resources/logout.png"
+                        source: "../../resources/icons/logout.png"
                         opacity: 0.6
                         fillMode: Image.PreserveAspectFit
                     }
+                    
+                    // Icono de respaldo (texto)
                     Label { 
                         text: "⏻"
                         color: "#EF4444"
@@ -179,10 +200,9 @@ Rectangle {
                         visible: parent.children[0].status !== Image.Ready
                     }
                     
-                    // Acción de cerrar sesión conectada
                     onClicked: {
                         console.log("Cerrando sesión...")
-                        Controller.logout()
+                        auth.logout() // Llamada al nuevo controlador
                     }
                 }
             }
