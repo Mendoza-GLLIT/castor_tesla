@@ -9,9 +9,19 @@ class PosController(QObject):
     totalChanged = Signal()
     notification = Signal(str, bool)  # mensaje, es_error
     historyChanged = Signal()         # Notifica cambios en la lista de ventas
+    userNameChanged = Signal()        # NUEVO: Notifica cuando cambia el usuario logueado
 
-    def __init__(self):
+    # AQUI EL CAMBIO: Recibimos auth_controller en el constructor
+    def __init__(self, auth_controller):
         super().__init__()
+        
+        # Guardamos la referencia al controlador de autenticación
+        self._auth = auth_controller
+        
+        # Conectamos la señal del AuthController para que cuando cambie el usuario,
+        # nosotros avisemos a la vista del POS (userNameChanged)
+        self._auth.userChanged.connect(self.userNameChanged.emit)
+
         self._cart_model = CartModel()
         self._total = 0.0
         
@@ -29,9 +39,12 @@ class PosController(QObject):
     # PROPIEDADES GENERALES (Usuario y Clientes)
     # ==========================================================
     
-    @Property(str, constant=True)
+    # AQUI EL CAMBIO: Ya no es constante, depende del AuthController
+    @Property(str, notify=userNameChanged)
     def currentUserName(self):
-        return "Emmanuel M. (Admin)"
+        # Devuelve el nombre real o un fallback si no hay nadie
+        name = self._auth.fullName
+        return name if name else "Sin Cajero Asignado"
 
     @Property(list, constant=True)
     def clientsModel(self):
@@ -144,9 +157,16 @@ class PosController(QObject):
 
         # Si no hay cliente seleccionado, intenta usar el primero o deja que la DB maneje nulos
         client_id_final = self._selected_client_id
-        user_id = 1 
+        
+        # AQUI EL CAMBIO: Obtenemos el ID real desde el AuthController
+        # Accedemos directo al diccionario interno _user_session
+        user_id = self._auth._user_session.get("id", 0)
 
-        print(f"🚀 Iniciando cobro. Cliente: {client_id_final}, Total: {self._total}")
+        if user_id == 0:
+            self.notification.emit("⚠️ Error: No hay un cajero logueado válido", True)
+            return
+
+        print(f"🚀 Iniciando cobro. Cliente: {client_id_final}, Cajero ID: {user_id}, Total: {self._total}")
 
         success, msg = save_sale_transaction(user_id, client_id_final, self._total, items) 
 

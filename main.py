@@ -25,13 +25,14 @@ def main():
 
     engine = QQmlApplicationEngine()
     
-    # --- AQUI ESTÁ EL CAMBIO IMPORTANTE ---
-    # Usamos AuthController en lugar del viejo Controller
+    # 1. Instanciamos el AuthController primero
     auth_controller = AuthController(engine)
     engine.rootContext().setContextProperty("auth", auth_controller)
 
-    # Backend del POS
-    pos_controller = PosController()
+    # --- AQUI ESTÁ EL CAMBIO ---
+    # 2. Le pasamos el auth_controller al PosController
+    # Esto conecta el cerebro del login con el cerebro de las ventas
+    pos_controller = PosController(auth_controller)
     engine.rootContext().setContextProperty("posBackend", pos_controller)
 
     # Cargar Modelos de Datos
