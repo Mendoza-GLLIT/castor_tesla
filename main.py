@@ -6,6 +6,7 @@ from PySide6.QtQuickControls2 import QQuickStyle
 # Controladores
 from src.controllers.auth_controller import AuthController
 from src.controllers.pos_controller import PosController
+from src.controllers.employers_controller import EmployersController # <--- NUEVO IMPORT
 
 # Repositorios (Bases de datos)
 from src.database.product_repo import load_products
@@ -19,21 +20,22 @@ def main():
     app = QGuiApplication(sys.argv)
     QQuickStyle.setStyle("Fusion")
     
-    # Nombre de organización para QSettings (Recordarme)
     app.setOrganizationName("CastorTesla")
     app.setOrganizationDomain("castor.com")
 
     engine = QQmlApplicationEngine()
     
-    # 1. Instanciamos el AuthController primero
+    # 1. Auth Controller
     auth_controller = AuthController(engine)
     engine.rootContext().setContextProperty("auth", auth_controller)
 
-    # --- AQUI ESTÁ EL CAMBIO ---
-    # 2. Le pasamos el auth_controller al PosController
-    # Esto conecta el cerebro del login con el cerebro de las ventas
+    # 2. POS Controller
     pos_controller = PosController(auth_controller)
     engine.rootContext().setContextProperty("posBackend", pos_controller)
+
+    # 3. Employers Controller (NUEVO)
+    employers_controller = EmployersController()
+    engine.rootContext().setContextProperty("employersBackend", employers_controller)
 
     # Cargar Modelos de Datos
     products_data = load_products()
@@ -44,7 +46,7 @@ def main():
     sales_model = SalesModel(sales_data)
     engine.rootContext().setContextProperty("salesModel", sales_model)
 
-    # Cargar vista inicial (Login)
+    # Cargar vista inicial
     current_dir = os.path.dirname(os.path.abspath(__file__))
     login_path = os.path.join(current_dir, "src", "ui", "login.qml")
     

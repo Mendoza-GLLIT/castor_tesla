@@ -10,13 +10,18 @@ Rectangle {
 
     property Loader viewLoader
     property string currentView: "views/pos.qml"
+    
+    // Obtenemos el rol actual desde el controlador 'auth'
+    // Se actualizará automáticamente cuando cambie la sesión
+    property string userRole: auth.userRole
+    property string userName: auth.fullName
 
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 20
         spacing: 20
 
-        // CABECERA
+        // --- ENCABEZADO ---
         ColumnLayout {
             Layout.fillWidth: true
             spacing: 10
@@ -37,36 +42,42 @@ Rectangle {
             }
         }
 
-        // MENÚ DE NAVEGACIÓN
+        // --- MENÚ DE NAVEGACIÓN ---
         ColumnLayout {
             Layout.fillWidth: true
             Layout.fillHeight: true
             spacing: 8
 
+            // 1. PUNTO DE VENTA (Admin y Vendedor)
             SidebarButton {
                 icon: "dashboard"
                 text: "Punto de Venta"
                 isActive: sidebar.currentView === "views/pos.qml"
+                visible: userRole === "Administrador" || userRole === "Vendedor"
                 onClicked: {
                     sidebar.currentView = "views/pos.qml"
                     viewLoader.source = "views/pos.qml"
                 }
             }
 
+            // 2. HISTORIAL DE VENTAS (Admin, Contador, Vendedor)
             SidebarButton {
                 icon: "shopping-cart"
                 text: "Historial Ventas"
                 isActive: sidebar.currentView === "views/sales.qml"
+                visible: userRole === "Administrador" || userRole === "Contador" || userRole === "Vendedor"
                 onClicked: {
                     sidebar.currentView = "views/sales.qml"
                     viewLoader.source = "views/sales.qml"
                 }
             }
 
+            // 3. INVENTARIO (Admin, Almacenista, Contador, Vendedor)
             SidebarButton {
                 icon: "box"
                 text: "Inventario"
                 isActive: sidebar.currentView === "views/inventory.qml"
+                visible: userRole === "Administrador" || userRole === "Almacenista" || userRole === "Contador" || userRole === "Vendedor"
                 onClicked: {
                     sidebar.currentView = "views/inventory.qml"
                     viewLoader.source = "views/inventory.qml"
@@ -75,13 +86,16 @@ Rectangle {
 
             Item { height: 10 } 
 
+            // 4. FUNCIONES EXTRAS (Solo Admin por ahora)
+            // Puedes agregar más roles si es necesario
             SidebarButton {
                 icon: "schedule"
                 text: "Agenda"
                 isActive: sidebar.currentView === "views/schedule.qml"
+                visible: userRole === "Administrador" || userRole === "Almacenista" || userRole === "Contador" || userRole === "Vendedor"
                 onClicked: {
                     sidebar.currentView = "views/schedule.qml"
-                    viewLoader.source = "views/schedule.qml"
+                    // viewLoader.source = "views/schedule.qml" (Si existe)
                 }
             }
 
@@ -89,9 +103,23 @@ Rectangle {
                 icon: "message"
                 text: "Mensajes"
                 isActive: sidebar.currentView === "views/messages.qml"
+                visible: userRole === "Administrador" || userRole === "Almacenista" || userRole === "Contador" || userRole === "Vendedor"
                 onClicked: {
                     sidebar.currentView = "views/messages.qml"
-                    viewLoader.source = "views/messages.qml"
+                    // viewLoader.source = "views/messages.qml" (Si existe)
+                }
+            }
+            
+            // 5. GESTIÓN DE EMPLEADOS (Solo Admin)
+            // Aquí conectamos tu nueva vista employers.qml
+            SidebarButton {
+                icon: "settings" // Usamos icono de engrane temporalmente
+                text: "Empleados"
+                isActive: sidebar.currentView === "views/employers.qml"
+                visible: userRole === "Administrador" 
+                onClicked: {
+                    sidebar.currentView = "views/employers.qml"
+                    viewLoader.source = "views/employers.qml"
                 }
             }
 
@@ -101,14 +129,15 @@ Rectangle {
                 icon: "settings"
                 text: "Configuración"
                 isActive: sidebar.currentView === "views/settings.qml"
+                visible: userRole === "Administrador"
                 onClicked: {
                     sidebar.currentView = "views/settings.qml"
-                    viewLoader.source = "views/settings.qml"
+                    // viewLoader.source = "views/settings.qml"
                 }
             }
         }
 
-        // SECCIÓN DE PERFIL (PIE DE PÁGINA)
+        // --- TARJETA DE USUARIO (PERFIL) ---
         Rectangle {
             Layout.fillWidth: true
             height: 70
@@ -122,7 +151,7 @@ Rectangle {
                 anchors.margins: 12
                 spacing: 12
 
-                // Avatar / Iniciales
+                // Avatar con iniciales
                 Rectangle {
                     width: 42
                     height: 42
@@ -130,79 +159,50 @@ Rectangle {
                     color: "#2C3454"
                     clip: true
 
-                    Image {
-                        id: profileImg
-                        anchors.fill: parent
-                        source: "../../resources/profile.png"
-                        fillMode: Image.PreserveAspectCrop
-                        // Si falla la carga, limpiamos source para mostrar texto
-                        onStatusChanged: if (status === Image.Error) source = "" 
-                    }
-                    
                     Label {
                         anchors.centerIn: parent
-                        // Lógica para obtener iniciales: "Emmanuel Mendoza" -> "EM"
-                        text: {
-                            var name = auth.fullName ? auth.fullName : auth.username
-                            if (!name) return "??"
-                            var parts = name.split(" ")
-                            if (parts.length >= 2) {
-                                return (parts[0][0] + parts[1][0]).toUpperCase()
-                            } else {
-                                return name.substring(0, 2).toUpperCase()
-                            }
-                        }
+                        // Tomamos la primera letra del usuario
+                        text: userName.charAt(0).toUpperCase()
                         color: "white"
                         font.bold: true
-                        visible: profileImg.status !== Image.Ready
+                        font.pixelSize: 18
                     }
                 }
 
-                // Info del Usuario
+                // Información del Usuario Dinámica
                 ColumnLayout {
                     Layout.fillWidth: true
                     spacing: 2
-                    
                     Label {
-                        text: auth.fullName !== "" ? auth.fullName : auth.username
+                        text: sidebar.userName // Nombre real desde Python
                         font.pixelSize: 14
                         font.bold: true
                         color: "white"
                         elide: Text.ElideRight
                         Layout.fillWidth: true
                     }
-                    
                     Label {
-                        text: auth.userRole
+                        text: sidebar.userRole // Rol real desde Python
                         font.pixelSize: 11
                         color: "#9CA3AF"
                     }
                 }
 
-                // Botón Salir
+                // Botón Cerrar Sesión
                 MouseArea {
                     width: 24; height: 24
                     cursorShape: Qt.PointingHandCursor
                     
-                    Image {
-                        anchors.fill: parent
-                        source: "../../resources/icons/logout.png"
-                        opacity: 0.6
-                        fillMode: Image.PreserveAspectFit
-                    }
-                    
-                    // Icono de respaldo (texto)
                     Label { 
-                        text: "⏻"
+                        text: "⏻" // Símbolo de Power
                         color: "#EF4444"
-                        font.pixelSize: 18
+                        font.pixelSize: 20
                         anchors.centerIn: parent
-                        visible: parent.children[0].status !== Image.Ready
                     }
                     
                     onClicked: {
                         console.log("Cerrando sesión...")
-                        auth.logout() // Llamada al nuevo controlador
+                        auth.logout() // Llamada al controlador Auth
                     }
                 }
             }
