@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 
+
 Rectangle {
     id: sidebar
     width: 260
@@ -12,7 +13,6 @@ Rectangle {
     property string currentView: "views/pos.qml"
     
     // Obtenemos el rol actual desde el controlador 'auth'
-    // Se actualizará automáticamente cuando cambie la sesión
     property string userRole: auth.userRole
     property string userName: auth.fullName
 
@@ -50,7 +50,7 @@ Rectangle {
 
             // 1. PUNTO DE VENTA (Admin y Vendedor)
             SidebarButton {
-                icon: "dashboard"
+                icon: "delivery_truck"
                 text: "Punto de Venta"
                 isActive: sidebar.currentView === "views/pos.qml"
                 visible: userRole === "Administrador" || userRole === "Vendedor"
@@ -62,7 +62,7 @@ Rectangle {
 
             // 2. HISTORIAL DE VENTAS (Admin, Contador, Vendedor)
             SidebarButton {
-                icon: "shopping-cart"
+                icon: "dollar"
                 text: "Historial Ventas"
                 isActive: sidebar.currentView === "views/sales.qml"
                 visible: userRole === "Administrador" || userRole === "Contador" || userRole === "Vendedor"
@@ -74,7 +74,7 @@ Rectangle {
 
             // 3. INVENTARIO (Admin, Almacenista, Contador, Vendedor)
             SidebarButton {
-                icon: "box"
+                icon: "boxes"
                 text: "Inventario"
                 isActive: sidebar.currentView === "views/inventory.qml"
                 visible: userRole === "Administrador" || userRole === "Almacenista" || userRole === "Contador" || userRole === "Vendedor"
@@ -84,36 +84,13 @@ Rectangle {
                 }
             }
 
+            // --- ESPACIADOR ---
+            // AQUÍ ESTABA EL ERROR (te faltaba 'Item')
             Item { height: 10 } 
 
-            // 4. FUNCIONES EXTRAS (Solo Admin por ahora)
-            // Puedes agregar más roles si es necesario
+            // 4. EMPLEADOS (Solo Admin)
             SidebarButton {
-                icon: "schedule"
-                text: "Agenda"
-                isActive: sidebar.currentView === "views/schedule.qml"
-                visible: userRole === "Administrador" || userRole === "Almacenista" || userRole === "Contador" || userRole === "Vendedor"
-                onClicked: {
-                    sidebar.currentView = "views/schedule.qml"
-                    // viewLoader.source = "views/schedule.qml" (Si existe)
-                }
-            }
-
-            SidebarButton {
-                icon: "message"
-                text: "Mensajes"
-                isActive: sidebar.currentView === "views/messages.qml"
-                visible: userRole === "Administrador" || userRole === "Almacenista" || userRole === "Contador" || userRole === "Vendedor"
-                onClicked: {
-                    sidebar.currentView = "views/messages.qml"
-                    // viewLoader.source = "views/messages.qml" (Si existe)
-                }
-            }
-            
-            // 5. GESTIÓN DE EMPLEADOS (Solo Admin)
-            // Aquí conectamos tu nueva vista employers.qml
-            SidebarButton {
-                icon: "settings" // Usamos icono de engrane temporalmente
+                icon: "user" 
                 text: "Empleados"
                 isActive: sidebar.currentView === "views/employers.qml"
                 visible: userRole === "Administrador" 
@@ -123,8 +100,34 @@ Rectangle {
                 }
             }
 
+            // 5. CLIENTES
+            SidebarButton {
+                icon: "clients"
+                text: "Clientes"
+                isActive: sidebar.currentView === "views/messages.qml" // Asegúrate de tener esta vista o cámbiala
+                visible: userRole === "Administrador" || userRole === "Almacenista" || userRole === "Contador" || userRole === "Vendedor"
+                onClicked: {
+                    sidebar.currentView = "views/messages.qml"
+                    // viewLoader.source = "views/messages.qml" 
+                }
+            }
+
+            // 6. ESTADÍSTICAS
+            SidebarButton {
+                icon: "stats"
+                text: "Estadisticas"
+                isActive: sidebar.currentView === "views/schedule.qml"
+                visible: userRole === "Administrador" || userRole === "Almacenista" || userRole === "Contador" || userRole === "Vendedor"
+                onClicked: {
+                    sidebar.currentView = "views/schedule.qml"
+                    // viewLoader.source = "views/schedule.qml"
+                }
+            }
+            
+            // Espaciador flexible para empujar Configuración abajo
             Item { Layout.fillHeight: true }
 
+            // 7. CONFIGURACIÓN
             SidebarButton {
                 icon: "settings"
                 text: "Configuración"
@@ -161,20 +164,19 @@ Rectangle {
 
                     Label {
                         anchors.centerIn: parent
-                        // Tomamos la primera letra del usuario
-                        text: userName.charAt(0).toUpperCase()
+                        text: userName ? userName.charAt(0).toUpperCase() : "?"
                         color: "white"
                         font.bold: true
                         font.pixelSize: 18
                     }
                 }
 
-                // Información del Usuario Dinámica
+                // Información del Usuario
                 ColumnLayout {
                     Layout.fillWidth: true
                     spacing: 2
                     Label {
-                        text: sidebar.userName // Nombre real desde Python
+                        text: sidebar.userName 
                         font.pixelSize: 14
                         font.bold: true
                         color: "white"
@@ -182,7 +184,7 @@ Rectangle {
                         Layout.fillWidth: true
                     }
                     Label {
-                        text: sidebar.userRole // Rol real desde Python
+                        text: sidebar.userRole 
                         font.pixelSize: 11
                         color: "#9CA3AF"
                     }
@@ -202,7 +204,7 @@ Rectangle {
                     
                     onClicked: {
                         console.log("Cerrando sesión...")
-                        auth.logout() // Llamada al controlador Auth
+                        auth.logout() 
                     }
                 }
             }

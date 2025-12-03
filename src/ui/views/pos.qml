@@ -15,7 +15,7 @@ Item {
     readonly property color dangerRed: "#EF4444"
     readonly property color successGreen: "#10B981"
 
-    // --- NOTIFICACIONES (Igual que antes) ---
+    // --- NOTIFICACIONES ---
     Rectangle {
         id: notification
         width: 400; height: 48; radius: 8
@@ -68,14 +68,23 @@ Item {
                     font.pixelSize: 20; font.bold: true; color: textDark 
                 }
 
+                // --- BUSCADOR CONECTADO AL MODELO ---
                 TextField {
                     placeholderText: "Filtrar productos..."
+                    placeholderTextColor: textMedium
+                    color: textDark
                     Layout.fillWidth: true
                     height: 40
-                    background: Rectangle { color: bgSecondary; radius: 8 }
+                    font.pixelSize: 14
+                    background: Rectangle { 
+                        color: bgSecondary; radius: 8; border.color: borderLight; border.width: 1 
+                    }
+                    
+                    // 👇👇👇 ESTA LÍNEA HACE LA MAGIA DEL FILTRO 👇👇👇
+                    onTextChanged: productsModel.filter(text)
                 }
 
-                // Cabecera Lista Productos
+                // Cabecera
                 RowLayout {
                     Layout.fillWidth: true
                     Label { text: "PRODUCTO"; font.bold: true; color: textMedium; Layout.fillWidth: true }
@@ -108,12 +117,16 @@ Item {
                             Label { text: precio; font.pixelSize: 14; color: textDark; Layout.preferredWidth: 70; horizontalAlignment: Text.AlignRight }
                             Label { text: stock; font.pixelSize: 14; color: textMedium; Layout.preferredWidth: 60; horizontalAlignment: Text.AlignCenter }
                             
+                            // Input Cantidad (Color corregido)
                             TextField {
                                 id: qtyInput; text: "1"
                                 font.pixelSize: 14; horizontalAlignment: Text.AlignHCenter
                                 Layout.preferredWidth: 50; Layout.preferredHeight: 32
                                 validator: IntValidator { bottom: 1; top: 999 }
-                                background: Rectangle { color: "white"; radius: 4; border.color: borderLight; border.width: 1 }
+                                color: textDark // <-- Importante
+                                background: Rectangle { 
+                                    color: "white"; radius: 4; border.color: borderLight; border.width: 1 
+                                }
                             }
 
                             Button {
@@ -136,40 +149,32 @@ Item {
         }
 
         // ============================================================
-        // 🛒 PANEL DERECHO: CARRITO, USUARIO Y CLIENTE
+        // 🛒 PANEL DERECHO
         // ============================================================
         ColumnLayout {
             Layout.fillHeight: true
             Layout.preferredWidth: 4
             spacing: 16
 
-            // --- 1. TARJETA DE USUARIO (CAJERO) ---
+            // Tarjeta Usuario
             Rectangle {
                 Layout.fillWidth: true; height: 80
                 color: bgPrimary; radius: 12; border.color: borderLight; border.width: 1
-                
                 RowLayout {
                     anchors.fill: parent; anchors.margins: 16; spacing: 12
-                    
                     Rectangle { width: 40; height: 40; radius: 20; color: "#E0E7FF"
                         Label { text: "👤"; anchors.centerIn: parent; font.pixelSize: 20 }
                     }
-                    
                     Column {
-                        // AQUI: Usamos el dato dinámico del backend
-                        Label { 
-                            text: "Cajero: " + posBackend.currentUserName 
-                            font.bold: true; color: textDark 
-                        }
+                        Label { text: "Cajero: " + posBackend.currentUserName; font.bold: true; color: textDark }
                         Label { text: "Sucursal: Tonalá Centro"; font.pixelSize: 12; color: textMedium }
                     }
-                    
                     Item { Layout.fillWidth: true }
                     Label { text: new Date().toLocaleDateString(); font.pixelSize: 12; color: textMedium }
                 }
             }
 
-            // --- 2. CARRITO Y SELECCIÓN DE CLIENTE ---
+            // Carrito y Cliente
             Rectangle {
                 Layout.fillWidth: true; Layout.fillHeight: true
                 color: bgPrimary; radius: 12; border.color: borderLight; border.width: 1
@@ -177,44 +182,60 @@ Item {
                 ColumnLayout {
                     anchors.fill: parent; anchors.margins: 16; spacing: 10
 
-                    // CABECERA: Selección de Cliente
                     Label { text: "Cliente del Pedido"; font.pixelSize: 12; color: textMedium }
                     
+                    // --- COMBOBOX CORREGIDO (Popup Blanco) ---
                     ComboBox {
                         id: clientSelector
                         Layout.fillWidth: true
                         Layout.preferredHeight: 40
+                        model: posBackend.clientsModel
+                        textRole: "nombre"
                         
-                        // Enlazamos al nuevo modelo en Python
-                        model: posBackend.clientsModel 
-                        // Indicamos qué campo del diccionario mostrar (ej: "nombre" o "nombre_empresa")
-                        textRole: "nombre" 
-                        
-                        // Estilo simple
                         background: Rectangle {
-                            color: bgSecondary
-                            radius: 8
-                            border.color: borderLight
-                            border.width: 1
+                            color: bgSecondary; radius: 8; border.color: borderLight; border.width: 1
                         }
-
-                        // Cuando se selecciona alguien, avisamos al backend
-                        onActivated: (index) => {
-                            posBackend.selectClient(index)
+                        contentItem: Text {
+                            leftPadding: 10
+                            text: parent.displayText
+                            font.pixelSize: 14
+                            color: textDark // <-- Importante
+                            verticalAlignment: Text.AlignVCenter
                         }
+                        delegate: ItemDelegate {
+                            width: clientSelector.width
+                            contentItem: Text {
+                                text: modelData.nombre
+                                color: textDark
+                                font.pixelSize: 14
+                                verticalAlignment: Text.AlignVCenter
+                            }
+                            background: Rectangle { color: parent.highlighted ? "#E0E7FF" : "white" }
+                        }
+                        popup: Popup {
+                            y: clientSelector.height - 1
+                            width: clientSelector.width
+                            implicitHeight: contentItem.implicitHeight
+                            padding: 1
+                            contentItem: ListView {
+                                clip: true
+                                implicitHeight: contentHeight
+                                model: clientSelector.popup.visible ? clientSelector.delegateModel : null
+                                currentIndex: clientSelector.highlightedIndex
+                                ScrollIndicator.vertical: ScrollIndicator { }
+                            }
+                            background: Rectangle { color: "white"; border.color: borderLight; radius: 8 }
+                        }
+                        onActivated: (index) => { posBackend.selectClient(index) }
                     }
                     
                     Rectangle { Layout.fillWidth: true; height: 1; color: borderLight; Layout.topMargin: 8 }
 
-                    // LISTA DEL CARRITO
                     Label { text: "Items en Carrito"; font.bold: true; font.pixelSize: 14; color: textDark }
 
                     ListView {
                         Layout.fillWidth: true; Layout.fillHeight: true
-                        clip: true
-                        model: posBackend.cartModel
-                        spacing: 8
-
+                        clip: true; model: posBackend.cartModel; spacing: 8
                         delegate: Rectangle {
                             width: parent.width; height: 40; color: "transparent"
                             RowLayout {
@@ -234,15 +255,11 @@ Item {
 
                     Rectangle { Layout.fillWidth: true; height: 1; color: borderLight }
 
-                    // TOTALES
                     RowLayout {
                         Layout.fillWidth: true
                         Label { text: "Total a Pagar"; font.pixelSize: 18; font.bold: true; color: textDark }
                         Item { Layout.fillWidth: true }
-                        Label { 
-                            text: "$" + posBackend.total.toFixed(2)
-                            font.pixelSize: 24; font.bold: true; color: accentPurple 
-                        }
+                        Label { text: "$" + posBackend.total.toFixed(2); font.pixelSize: 24; font.bold: true; color: accentPurple }
                     }
 
                     Button {

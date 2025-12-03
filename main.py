@@ -2,13 +2,15 @@ import sys, os
 from PySide6.QtGui import QGuiApplication
 from PySide6.QtQml import QQmlApplicationEngine
 from PySide6.QtQuickControls2 import QQuickStyle
+from PySide6.QtCore import QUrl # <--- IMPORTANTE: Necesario para la ruta de iconos
 
 # Controladores
 from src.controllers.auth_controller import AuthController
 from src.controllers.pos_controller import PosController
-from src.controllers.employers_controller import EmployersController # <--- NUEVO IMPORT
+from src.controllers.employers_controller import EmployersController
+from src.controllers.inventory_controller import InventoryController
 
-# Repositorios (Bases de datos)
+# Repositorios
 from src.database.product_repo import load_products
 from src.database.sales_repo import get_sales_history 
 
@@ -24,20 +26,23 @@ def main():
     app.setOrganizationDomain("castor.com")
 
     engine = QQmlApplicationEngine()
+
+    # ============================================================
+    # 👇👇👇 CONFIGURACIÓN DE RUTAS DE ICONOS 👇👇👇
+    # ============================================================
+    current_dir = os.path.dirname(os.path.abspath(__file__))
     
-    # 1. Auth Controller
-    auth_controller = AuthController(engine)
-    engine.rootContext().setContextProperty("auth", auth_controller)
-
-    # 2. POS Controller
-    pos_controller = PosController(auth_controller)
-    engine.rootContext().setContextProperty("posBackend", pos_controller)
-
-    # 3. Employers Controller (NUEVO)
-    employers_controller = EmployersController()
-    engine.rootContext().setContextProperty("employersBackend", employers_controller)
-
-    # Cargar Modelos de Datos
+    # 1. Calculamos la ruta: carpeta_del_proyecto/resources/icons
+    icons_path = os.path.join(current_dir, "resources", "icons")
+    
+    # 2. Convertimos a URL compatible con QML (file:///C:/...)
+    icons_url = QUrl.fromLocalFile(icons_path).toString()
+    
+    # 3. Inyectamos la variable global a QML para que SidebarButton la use
+    engine.rootContext().setContextProperty("iconBasePath", icons_url)
+    # ============================================================
+    
+    # --- 1. Modelos de Datos (Deben cargarse primero) ---
     products_data = load_products()
     products_model = ProductModel(products_data)
     engine.rootContext().setContextProperty("productsModel", products_model)
@@ -46,8 +51,25 @@ def main():
     sales_model = SalesModel(sales_data)
     engine.rootContext().setContextProperty("salesModel", sales_model)
 
-    # Cargar vista inicial
-    current_dir = os.path.dirname(os.path.abspath(__file__))
+    # --- 2. Controladores ---
+    
+    # Auth Controller
+    auth_controller = AuthController(engine)
+    engine.rootContext().setContextProperty("auth", auth_controller)
+
+    # POS Controller
+    pos_controller = PosController(auth_controller, products_model)
+    engine.rootContext().setContextProperty("posBackend", pos_controller)
+
+    # Employers Controller
+    employers_controller = EmployersController()
+    engine.rootContext().setContextProperty("employersBackend", employers_controller)
+
+    # Inventory Controller
+    inventory_controller = InventoryController(products_model) 
+    engine.rootContext().setContextProperty("inventoryCtrl", inventory_controller)
+
+    # --- 3. Cargar UI ---
     login_path = os.path.join(current_dir, "src", "ui", "login.qml")
     
     engine.load(login_path)

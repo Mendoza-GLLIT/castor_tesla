@@ -5,7 +5,7 @@ def load_products():
         conn = get_db_connection()
         cur = conn.cursor()
         
-        # CONSULTA DIRECTA (Sin JOINs complicados)
+        # CONSULTA DIRECTA
         query = """
             SELECT id_producto, codigo_producto, nombre, precio_unitario, stock, descripcion
             FROM "PRODUCTO"
@@ -17,7 +17,9 @@ def load_products():
         
         for pid, code, name, price, stock, desc in cur.fetchall():
             products.append({
-                "id": pid,
+                # --- CORRECCIÓN AQUÍ ---
+                "id_producto": pid,      # Antes decia "id", ahora coincide con el modelo
+                # -----------------------
                 "codigo": code,
                 "nombre": name,
                 "precio": float(price) if price else 0.0,
@@ -31,6 +33,8 @@ def load_products():
         return []
     
     
+# src/database/product_repo.py
+
 def get_product_by_code(code):
     try:
         conn = get_db_connection()
@@ -50,7 +54,10 @@ def get_product_by_code(code):
 
         if row:
             return {
-                "id": row[0],
+                # --- ESTO ES EL BLINDAJE ---
+                "id": row[0],           # <--- INDISPENSABLE para el POS (CartModel)
+                "id_producto": row[0],  # <--- INDISPENSABLE para el Inventario
+                # ---------------------------
                 "codigo": row[1],
                 "nombre": row[2],
                 "precio": float(row[3]),
