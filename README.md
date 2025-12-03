@@ -21,47 +21,64 @@ El proyecto sigue una arquitectura **MVC (Modelo-Vista-Controlador)** estricta, 
 ## 📂 Estructura del Proyecto
 
 ```text
-CastorTesla/
+castor_tesla/
 │
-├── main.py                 # 🏁 Punto de entrada principal (Ejecutar este archivo)
-├── crear_usuarios.py       # 🛠️ Script de utilidad (Root)
-├── requirements.txt        # 📦 Lista de librerías necesarias
-├── README.md               # 📄 Documentación del proyecto
+├── main.py                     # 🚀 Punto de entrada (Inicia la app, carga estilos y rutas)
+├── init_db.py                  # 🛠️ Script para crear/resetear las tablas de la BD
+├── requirements.txt            # 📦 Lista de librerías (PySide6, SQLAlchemy, psycopg2, etc.)
+├── .gitignore                  # 🙈 Archivos que Git debe ignorar (como __pycache__)
+├── README.md                   # 📄 Documentación del proyecto
 │
-└── src/
-    ├── controllers/        # 🧠 Lógica de Negocio (Python)
-    │   ├── controller.py       # Controlador principal (Login y Navegación)
-    │   └── pos_controller.py   # Controlador del Punto de Venta (Cálculos y Venta)
+├── resources/                  # 🎨 Archivos estáticos
+│   └── icons/                  # Iconos .png (logo, user, boxes, delivery_truck, etc.)
+│
+└── src/                        # 🧠 Código Fuente Principal
     │
-    ├── models/             # 📊 Modelos de Datos (QAbstractListModel)
-    │   ├── cart_model.py       # Modelo dinámico para el carrito de compras
-    │   ├── sales_model.py      # Modelo para el historial de ventas
-    │   └── models.py           # Modelo general de productos (Inventario)
+    ├── database/               # 💾 CAPA DE DATOS (SQL y Conexión)
+    │   ├── connection.py       # Configuración de conexión a PostgreSQL
+    │   ├── user_repo.py        # Consultas tabla USUARIO
+    │   ├── product_repo.py     # Consultas tabla PRODUCTO
+    │   ├── sales_repo.py       # Consultas tabla VENTA y DETALLE
+    │   ├── clients_repo.py     # Consultas tabla CLIENTE
+    │   ├── assets_repo.py      # Consultas tabla ACTIVO_FIJO
+    │   └── stats_repo.py       # Consultas complejas para Estadísticas
     │
-    ├── database/           # 🗄️ Base de Datos
-    │   ├── Create_tables.py    # Script para crear tablas
-    │   ├── Create_users.py     # Script para crear usuarios
-    │   ├── insert_products.py  # Script para llenar inventario inicial
-    │   └── database.py         # Conexión a PostgreSQL y consultas SQL
+    ├── models/                 # 📋 CAPA DE MODELOS (Adaptadores para QML)
+    │   ├── models.py           # ProductModel (Lista de productos con filtro)
+    │   ├── cart_model.py       # CartModel (Lógica del carrito de compras)
+    │   └── sales_model.py      # SalesModel (Lista de historial de ventas)
     │
-    ├── resources/          # 🎨 Recursos Gráficos
-    │   ├── icons/              # Iconos del menú
-    │   ├── logo.png            # Logotipo
-    │   └── profile.png         # Imagen de perfil
+    ├── controllers/            # 🎮 CAPA DE CONTROLADORES (Lógica de Negocio)
+    │   ├── auth_controller.py      # Login y Logout
+    │   ├── pos_controller.py       # Cobro, carrito, selección cliente
+    │   ├── inventory_controller.py # Altas, bajas y stock de productos
+    │   ├── employers_controller.py # CRUD de empleados
+    │   ├── clients_controller.py   # CRUD de clientes
+    │   ├── assets_controller.py    # CRUD de activos fijos
+    │   └── stats_controller.py     # Cálculo de KPIs y gráficas
     │
-    └── ui/                 # 🖥️ Interfaz de Usuario (QML)
-        ├── login.qml           # Pantalla de Inicio de Sesión
+    └── ui/                     # 🖼️ CAPA DE VISTA (Interfaz Gráfica QML)
+        ├── login.qml           # Pantalla de inicio de sesión
+        ├── dashboard.qml       # Contenedor principal (StackLayout)
         ├── sidebar.qml         # Menú lateral de navegación
-        ├── SidebarButton.qml   # Componente personalizado de botón
         │
-        └── views/          # 📑 Vistas de la Aplicación
-            ├── pos.qml             # Pantalla de Punto de Venta (Cobrar)
-            ├── sales.qml           # Pantalla de Historial de Ventas
-            ├── inventory.qml       # Pantalla de Inventario
-            ├── schedule.qml        # Agenda (Placeholder)
-            ├── messages.qml        # Mensajes (Placeholder)
-            └── settings.qml        # Configuración (Placeholder)
-
+        ├── components/         # 🧩 Componentes Reutilizables
+        │   └── SidebarButton.qml   # Botón personalizado del menú con icono
+        │
+        └── views/              # 📄 Páginas y Formularios
+            ├── pos.qml                 # Vista: Punto de Venta
+            ├── inventory.qml           # Vista: Tabla de Productos
+            ├── sales.qml               # Vista: Historial de Ventas
+            ├── employers.qml           # Vista: Gestión de Empleados
+            ├── clients.qml             # Vista: Cartera de Clientes
+            ├── assets.qml              # Vista: Activos Fijos
+            ├── statistics.qml          # Vista: Dashboard y Gráficas
+            │
+            ├── NewProductDialog.qml      # Modal: Crear Producto
+            ├── StockAdjustmentDialog.qml # Modal: Ajustar Stock (+/-)
+            ├── EmployeeFormDialog.qml    # Modal: Crear/Editar Empleado
+            ├── ClientFormDialog.qml      # Modal: Crear/Editar Cliente
+            └── AssetFormDialog.qml       # Modal: Crear/Editar Activo
 
 ⚙️ Guía de Instalación y Despliegue
 Para mantener el proyecto limpio, se recomienda crear el Entorno Virtual fuera de la carpeta del código fuente. Sigue estos pasos para desplegar el proyecto en tu máquina local.
