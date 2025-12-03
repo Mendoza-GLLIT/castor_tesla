@@ -18,6 +18,7 @@ Item {
     NewProductDialog { id: myNewProductDialog }
     StockAdjustmentDialog { id: myStockDialog }
 
+    // Componente RoundedButton Corregido
     component RoundedButton: Button {
         id: control
         property color btnColor: accentPurple
@@ -32,7 +33,13 @@ Item {
             text: control.text; font: control.font; color: control.btnTextColor
             horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter
         }
-        MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onPressed: mouse.accepted = false }
+        MouseArea { 
+            anchors.fill: parent
+            cursorShape: Qt.PointingHandCursor
+            
+            // 👇👇👇 CORRECCIÓN: Función explícita para evitar warning 👇👇👇
+            onPressed: (mouse) => { mouse.accepted = false } 
+        }
     }
 
     // UI Principal
@@ -88,7 +95,6 @@ Item {
                                     font.pixelSize: 14; color: textDark; background: null
                                     Layout.fillWidth: true; Layout.alignment: Qt.AlignVCenter
                                     
-                                    // 👇👇👇 FILTRO CONECTADO 👇👇👇
                                     onTextChanged: productsModel.filter(text)
                                 }
                             }
@@ -123,7 +129,10 @@ Item {
                         boundsBehavior: Flickable.StopAtBounds
 
                         delegate: Rectangle {
-                            width: parent.width; height: 64; color: bgPrimary
+                            // 👇👇👇 CORRECCIÓN: Evitamos error de 'width of null' 👇👇👇
+                            width: productList.width 
+                            height: 64; color: bgPrimary
+                            
                             Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: 1; color: borderLight }
                             RowLayout {
                                 anchors.fill: parent; spacing: 0
@@ -145,7 +154,13 @@ Item {
                                     text: "•••"; font.pixelSize: 20; width: 40; height: 40; flat: true; Layout.alignment: Qt.AlignVCenter
                                     contentItem: Text { text: parent.text; color: textMedium; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; bottomPadding: 8 }
                                     background: Rectangle { color: parent.hovered ? bgSecondary : "transparent"; radius: 6 }
-                                    MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onPressed: mouse.accepted = false }
+                                    
+                                    // 👇👇👇 CORRECCIÓN: Función explícita para evitar warning 👇👇👇
+                                    MouseArea { 
+                                        anchors.fill: parent
+                                        cursorShape: Qt.PointingHandCursor
+                                        onPressed: (mouse) => { mouse.accepted = false } 
+                                    }
                                 }
                             }
                         }

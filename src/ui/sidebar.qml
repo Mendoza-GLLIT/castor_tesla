@@ -88,7 +88,20 @@ Rectangle {
             // AQUÍ ESTABA EL ERROR (te faltaba 'Item')
             Item { height: 10 } 
 
-            // 4. EMPLEADOS (Solo Admin)
+
+            // 4. CLIENTES
+            SidebarButton {
+                icon: "clients"
+                text: "Clientes"
+                isActive: sidebar.currentView === "views/clients.qml" // Asegúrate de tener esta vista o cámbiala
+                visible: userRole === "Administrador" || userRole === "Almacenista" || userRole === "Contador" || userRole === "Vendedor"
+                onClicked: {
+                    sidebar.currentView = "views/clients.qml"
+                    viewLoader.source = "views/clients.qml" 
+                }
+            }
+
+            // 5. EMPLEADOS (Solo Admin)
             SidebarButton {
                 icon: "user" 
                 text: "Empleados"
@@ -100,15 +113,15 @@ Rectangle {
                 }
             }
 
-            // 5. CLIENTES
+            // 6. Activos
             SidebarButton {
-                icon: "clients"
-                text: "Clientes"
-                isActive: sidebar.currentView === "views/messages.qml" // Asegúrate de tener esta vista o cámbiala
+                icon: "assets"
+                text: "Activos"
+                isActive: sidebar.currentView === "views/assets.qml"
                 visible: userRole === "Administrador" || userRole === "Almacenista" || userRole === "Contador" || userRole === "Vendedor"
                 onClicked: {
-                    sidebar.currentView = "views/messages.qml"
-                    // viewLoader.source = "views/messages.qml" 
+                    sidebar.currentView = "views/assets.qml"
+                    viewLoader.source = "views/assets.qml"
                 }
             }
 
@@ -116,11 +129,11 @@ Rectangle {
             SidebarButton {
                 icon: "stats"
                 text: "Estadisticas"
-                isActive: sidebar.currentView === "views/schedule.qml"
+                isActive: sidebar.currentView === "views/statistics.qml"
                 visible: userRole === "Administrador" || userRole === "Almacenista" || userRole === "Contador" || userRole === "Vendedor"
                 onClicked: {
-                    sidebar.currentView = "views/schedule.qml"
-                    // viewLoader.source = "views/schedule.qml"
+                    sidebar.currentView = "views/statistics.qml"
+                    viewLoader.source = "views/statistics.qml"
                 }
             }
             

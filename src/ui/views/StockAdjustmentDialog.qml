@@ -7,7 +7,7 @@ Dialog {
     id: root
     modal: true
     width: 600
-    height: 650 // Un poco más alto para la nueva cabecera
+    height: 650
     x: (parent.width - width) / 2
     y: (parent.height - height) / 2
     
@@ -56,10 +56,13 @@ Dialog {
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
         }
+        
+        // 👇👇👇 CORRECCIÓN AQUÍ 👇👇👇
         MouseArea { 
             anchors.fill: parent
             cursorShape: Qt.PointingHandCursor
-            onPressed: mouse.accepted = false 
+            // Usamos la función flecha explícita
+            onPressed: (mouse) => { mouse.accepted = false } 
         }
     }
 
@@ -75,7 +78,6 @@ Dialog {
             Layout.preferredHeight: 60
             color: "#EFF6FF"
             radius: 12
-            // Truco para que solo redondee arriba
             Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: 12; color: parent.color }
             
             RowLayout {
@@ -89,124 +91,78 @@ Dialog {
                     spacing: 0
                     Label { 
                         text: "Gestión Rápida de Stock"
-                        font.pixelSize: 16
-                        font.bold: true
-                        color: "#1E40AF" 
+                        font.pixelSize: 16; font.bold: true; color: "#1E40AF" 
                     }
                     Label { 
                         text: "Ajusta cantidades en tiempo real"
-                        font.pixelSize: 12
-                        color: "#60A5FA" 
+                        font.pixelSize: 12; color: "#60A5FA" 
                     }
                 }
                 
-                Item { Layout.fillWidth: true } // Espaciador
+                Item { Layout.fillWidth: true }
                 
                 // Botón Cerrar (X)
                 Button {
                     text: "✕"
                     flat: true
-                    Layout.preferredWidth: 30
-                    Layout.preferredHeight: 30
+                    Layout.preferredWidth: 30; Layout.preferredHeight: 30
                     background: Rectangle { color: parent.hovered ? "#DBEAFE" : "transparent"; radius: 15 }
                     contentItem: Text { text: parent.text; color: "#1E40AF"; font.bold: true; anchors.centerIn: parent }
                     onClicked: root.close()
                 }
             }
-            
-            // Línea divisoria
-            Rectangle {
-                width: parent.width; height: 1; color: "#DBEAFE"
-                anchors.bottom: parent.bottom
-            }
+            Rectangle { width: parent.width; height: 1; color: "#DBEAFE"; anchors.bottom: parent.bottom }
         }
 
-        // 2. CONTENIDO PRINCIPAL (Con márgenes)
+        // 2. CONTENIDO PRINCIPAL
         ColumnLayout {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            Layout.margins: 20
-            spacing: 15
+            Layout.fillWidth: true; Layout.fillHeight: true; Layout.margins: 20; spacing: 15
 
             // Aviso
             Rectangle {
-                Layout.fillWidth: true
-                height: 36
-                color: "#F0FDFA" // Verde muy muy claro
-                radius: 6
-                border.color: "#CCFBF1"
-                
+                Layout.fillWidth: true; height: 36
+                color: "#F0FDFA"; radius: 6; border.color: "#CCFBF1"
                 RowLayout {
                     anchors.fill: parent; anchors.leftMargin: 12
                     Label { text: "ℹ️"; font.pixelSize: 12 }
-                    Label { 
-                        text: "Los cambios se guardan automáticamente al pulsar + o -"
-                        font.pixelSize: 12; color: "#0F766E" // Verde azulado oscuro
-                    }
+                    Label { text: "Los cambios se guardan automáticamente al pulsar + o -"; font.pixelSize: 12; color: "#0F766E" }
                 }
             }
 
             // Lista de Productos
             ListView {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
+                Layout.fillWidth: true; Layout.fillHeight: true
                 clip: true
                 model: productsModel 
                 spacing: 8 
 
                 delegate: Rectangle {
-                    width: parent.width
-                    height: 64
-                    radius: 8
-                    color: bgPrimary
-                    border.color: borderLight
-                    border.width: 1
+                    width: parent.width; height: 64; radius: 8
+                    color: bgPrimary; border.color: borderLight; border.width: 1
 
                     RowLayout {
-                        anchors.fill: parent
-                        anchors.leftMargin: 15
-                        anchors.rightMargin: 15
-                        spacing: 15
+                        anchors.fill: parent; anchors.leftMargin: 15; anchors.rightMargin: 15; spacing: 15
 
-                        // Icono producto (opcional, placeholder)
                         Rectangle {
-                            width: 36; height: 36
-                            radius: 6
-                            color: bgSecondary
-                            border.color: borderLight
+                            width: 36; height: 36; radius: 6
+                            color: bgSecondary; border.color: borderLight
                             Label { text: "🏷️"; anchors.centerIn: parent; font.pixelSize: 16 }
                         }
 
-                        // Info
                         ColumnLayout {
-                            Layout.fillWidth: true
-                            spacing: 2
-                            Label { 
-                                text: model.nombre 
-                                font.pixelSize: 14; font.weight: Font.DemiBold; color: textDark
-                                elide: Text.ElideRight; Layout.fillWidth: true
-                            }
-                            Label { 
-                                text: model.codigo 
-                                font.pixelSize: 11; color: textMedium
-                                background: Rectangle { color: bgSecondary; radius: 3 } // Estilo "tag"
-                            }
+                            Layout.fillWidth: true; spacing: 2
+                            Label { text: model.nombre; font.pixelSize: 14; font.weight: Font.DemiBold; color: textDark; elide: Text.ElideRight; Layout.fillWidth: true }
+                            Label { text: model.codigo; font.pixelSize: 11; color: textMedium; background: Rectangle { color: bgSecondary; radius: 3 } }
                         }
 
                         // Control de Stock
                         Rectangle {
-                            Layout.preferredWidth: 140
-                            Layout.preferredHeight: 38
-                            color: bgSecondary
-                            radius: 19 // Pill shape perfecta
-                            border.color: borderLight
+                            Layout.preferredWidth: 140; Layout.preferredHeight: 38
+                            color: bgSecondary; radius: 19; border.color: borderLight
 
                             RowLayout {
-                                anchors.fill: parent
-                                anchors.margins: 3
-                                spacing: 0
+                                anchors.fill: parent; anchors.margins: 3; spacing: 0
 
-                                // Menos
                                 MiniButton {
                                     symbol: "-"
                                     baseColor: stockRed
@@ -217,30 +173,21 @@ Dialog {
                                     }
                                 }
 
-                                // Input
                                 TextField {
-                                    Layout.fillWidth: true
-                                    Layout.alignment: Qt.AlignVCenter
+                                    Layout.fillWidth: true; Layout.alignment: Qt.AlignVCenter
                                     text: model.stock
-                                    font.pixelSize: 14
-                                    font.bold: true
-                                    color: textDark
+                                    font.pixelSize: 14; font.bold: true; color: textDark
                                     horizontalAlignment: Text.AlignHCenter
                                     background: null 
                                     validator: IntValidator { bottom: 0; top: 99999 }
                                     selectByMouse: true
-                                    
                                     onEditingFinished: {
                                         var val = parseInt(text)
-                                        if (!isNaN(val)) {
-                                            inventoryCtrl.update_stock(model.id_producto, val)
-                                        } else {
-                                            text = model.stock 
-                                        }
+                                        if (!isNaN(val)) inventoryCtrl.update_stock(model.id_producto, val)
+                                        else text = model.stock 
                                     }
                                 }
 
-                                // Más
                                 MiniButton {
                                     symbol: "+"
                                     baseColor: stockGreen
@@ -256,28 +203,24 @@ Dialog {
                 }
             }
 
-            // Footer / Botón Cerrar
+            // Footer / Botón Hecho
             Button {
                 text: "Hecho"
-                Layout.fillWidth: true
-                Layout.preferredHeight: 48
-                Layout.topMargin: 10
-                
+                Layout.fillWidth: true; Layout.preferredHeight: 48; Layout.topMargin: 10
                 background: Rectangle {
                     color: parent.down ? Qt.darker(accentPurple, 1.1) : accentPurple
                     radius: 8
                 }
                 contentItem: Text {
-                    text: parent.text
-                    color: "white"
-                    font.bold: true
-                    font.pixelSize: 14
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
+                    text: parent.text; color: "white"; font.bold: true
+                    font.pixelSize: 14; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter
                 }
+                
+                // 👇👇👇 CORRECCIÓN AQUÍ TAMBIÉN 👇👇👇
                 MouseArea { 
-                    anchors.fill: parent; cursorShape: Qt.PointingHandCursor; 
-                    onPressed: mouse.accepted = false 
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    onPressed: (mouse) => { mouse.accepted = false } 
                 }
                 onClicked: root.close()
             }

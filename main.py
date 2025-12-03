@@ -9,6 +9,9 @@ from src.controllers.auth_controller import AuthController
 from src.controllers.pos_controller import PosController
 from src.controllers.employers_controller import EmployersController
 from src.controllers.inventory_controller import InventoryController
+from src.controllers.clients_controller import ClientsController
+from src.controllers.assets_controller import AssetsController
+from src.controllers.stats_controller import StatsController
 
 # Repositorios
 from src.database.product_repo import load_products
@@ -68,6 +71,21 @@ def main():
     # Inventory Controller
     inventory_controller = InventoryController(products_model) 
     engine.rootContext().setContextProperty("inventoryCtrl", inventory_controller)
+    
+    # 👇👇👇 NUEVO: CLIENTS CONTROLLER 👇👇👇
+    clients_controller = ClientsController()
+    engine.rootContext().setContextProperty("clientsBackend", clients_controller)
+    # 👆👆👆
+    
+    # 👇👇👇 REGISTRO DEL CONTROLADOR DE ACTIVOS 👇👇👇
+    assets_controller = AssetsController()
+    engine.rootContext().setContextProperty("assetsBackend", assets_controller)
+    # 👆👆👆
+    
+    # 👇👇👇 NUEVO: STATS CONTROLLER 👇👇👇
+    stats_controller = StatsController()
+    engine.rootContext().setContextProperty("statsBackend", stats_controller)
+    # 👆👆👆
 
     # --- 3. Cargar UI ---
     login_path = os.path.join(current_dir, "src", "ui", "login.qml")
