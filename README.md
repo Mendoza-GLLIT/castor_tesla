@@ -17,64 +17,56 @@ Desarrollado con Python y Qt (QML), el sistema permite administrar productos, re
 ---
 
 ## 📂 **Estructura del Proyecto**
+Aquí tienes la estructura formateada específicamente para ser copiada y pegada en un archivo README.md.
+
+He añadido una breve descripción de la arquitectura (MVC) para dar contexto a quien lea la documentación, ya que tu estructura separa claramente Lógica, Modelos y Vista.
+
+Opción 1: Bloque de Código (Copiar y Pegar)
+Markdown
+
+## 📂 Estructura del Proyecto
+
+El proyecto sigue una arquitectura modular basada en el patrón **MVC (Modelo-Vista-Controlador)** adaptado para **PySide6** y **QML**. El código fuente se encuentra en el directorio `src/`, separando la lógica de negocio de la interfaz de usuario.
+
+```text
 castor_tesla/
 │
 ├── main.py                     # Punto de entrada (Inicia la app, carga estilos y rutas)
-├── requirements.txt            # Lista de librerías (PySide6, SQLAlchemy, etc.)
-├── .gitignore                  # Archivos ignorados por Git
-├── README.md                   # Documentación del proyecto
+├── requirements.txt            # Dependencias del proyecto (PySide6, SQLAlchemy, psycopg2)
+├── .gitignore                  # Archivos excluidos del control de versiones
+├── README.md                   # Documentación general
 │
-├── resources/                  # Archivos estáticos
-│   └── icons/                  # Iconos e imágenes .png
+├── resources/                  # Archivos estáticos y multimedia
+│   └── icons/                  # Iconos e imágenes (assets gráficos)
 │
 └── src/                        # Código Fuente Principal
     │
-    ├── database/               # CAPA DE DATOS (SQL y Conexión)
-    │   ├── connection.py       # Configuración de conexión a PostgreSQL
-    │   ├── user_repo.py        # Consultas tabla USUARIO
-    │   ├── product_repo.py     # Consultas tabla PRODUCTO
-    │   ├── sales_repo.py       # Consultas tabla VENTA y DETALLE
-    │   ├── clients_repo.py     # Consultas tabla CLIENTE
-    │   ├── messages_repo.py    # Consultas tabla MENSAJES
-    │   ├── assets_repo.py      # Consultas tabla ACTIVO_FIJO
-    │   └── stats_repo.py       # Consultas complejas para Estadísticas
+    ├── database/               # CAPA DE DATOS (Repositories)
+    │   ├── connection.py       # Configuración del pool de conexión a PostgreSQL
+    │   ├── *_repo.py           # Scripts de consultas SQL directas por entidad
+    │   └── stats_repo.py       # Consultas complejas para reportes y KPIs
     │
-    ├── models/                 # CAPA DE MODELOS (Adaptadores para QML)
-    │   ├── models.py           # ProductModel (Lista de productos con filtro)
-    │   ├── cart_model.py       # CartModel (Lógica del carrito de compras)
-    │   └── sales_model.py      # SalesModel (Lista de historial de ventas)
+    ├── models/                 # CAPA DE MODELOS (Qt Models)
+    │   ├── models.py           # Modelos genéricos
+    │   ├── cart_model.py       # Lógica reactiva del carrito de compras
+    │   └── sales_model.py      # Modelo para visualización de tablas en QML
     │
-    ├── controllers/            # CAPA DE CONTROLADORES (Lógica de Negocio)
-    │   ├── auth_controller.py      # Login y Logout
-    │   ├── pos_controller.py       # Cobro, carrito, selección cliente
-    │   ├── inventory_controller.py # Altas, bajas y stock de productos
-    │   ├── employers_controller.py # CRUD de empleados
-    │   ├── clients_controller.py   # CRUD de clientes
-    │   ├── messages_controller.py  # Control de mensajes
-    │   ├── assets_controller.py    # CRUD de activos fijos
-    │   └── stats_controller.py     # Cálculo de KPIs y gráficas
+    ├── controllers/            # CAPA DE CONTROLADORES (Business Logic)
+    │   ├── auth_controller.py  # Gestión de sesión (Login/Logout)
+    │   ├── pos_controller.py   # Orquestador del Punto de Venta
+    │   └── *_controller.py     # Lógica CRUD puente entre UI y Base de Datos
     │
-    └── ui/                     # CAPA DE VISTA (Interfaz Gráfica QML)
-        ├── login.qml           # Pantalla de inicio de sesión
-        ├── dashboard.qml       # Contenedor principal (StackLayout)
-        ├── sidebar.qml         # Menú lateral de navegación
-        ├── SidebarButton.qml   # Botón personalizado del menú con icono
+    └── ui/                     # CAPA DE VISTA (Interfaz QML)
+        ├── login.qml           # Ventana de autenticación
+        ├── dashboard.qml       # Window principal y layout
+        ├── sidebar.qml         # Navegación lateral
         │
-        └── views/              # Páginas y Formularios
-            ├── pos.qml                 # Vista: Punto de Venta
-            ├── inventory.qml           # Vista: Tabla de Productos
-            ├── sales.qml               # Vista: Historial de Ventas
-            ├── employers.qml           # Vista: Gestión de Empleados
-            ├── clients.qml             # Vista: Cartera de Clientes
-            ├── assets.qml              # Vista: Activos Fijos
-            ├── messages.qml            # Vista: Alertas
-            ├── statistics.qml          # Vista: Dashboard y Gráficas
-            │
-            ├── NewProductDialog.qml      # Modal: Crear Producto
-            ├── StockAdjustmentDialog.qml # Modal: Ajustar Stock
-            ├── EmployeeFormDialog.qml    # Modal: Crear/Editar Empleado
-            ├── ClientFormDialog.qml      # Modal: Crear/Editar Cliente
-            └── AssetFormDialog.qml       # Modal: Crear/Editar Activo
+        └── views/              # Pantallas principales del sistema
+            ├── pos.qml         # Interfaz de Punto de Venta
+            ├── inventory.qml   # Gestión de inventario
+            ├── statistics.qml  # Dashboards visuales
+            └── *.qml           # Vistas de módulos específicos (Clientes, Activos, etc.)
+```
 
 ## ⚙️ **Guía de Instalación y Despliegue**
 
