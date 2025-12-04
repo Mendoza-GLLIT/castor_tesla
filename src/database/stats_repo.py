@@ -147,3 +147,48 @@ def get_sales_comparison():
         return 0.0, 0.0
     finally:
         conn.close()
+        
+def get_expected_revenue():
+    """Retorna la ganancia esperada del mes según el rendimiento promedio diario."""
+    conn = get_db_connection()
+    if not conn: 
+        return 0.0
+
+    try:
+        cur = conn.cursor()
+        today = datetime.now()
+        current_month = today.month
+        current_year = today.year
+        day_of_month = today.day
+
+        # Total ventas del mes actual
+        query = """
+            SELECT SUM(total_venta) 
+            FROM "VENTA"
+            WHERE EXTRACT(MONTH FROM fecha_venta) = %s
+              AND EXTRACT(YEAR FROM fecha_venta) = %s
+        """
+        cur.execute(query, (current_month, current_year))
+        row = cur.fetchone()
+        total_so_far = float(row[0]) if row and row[0] else 0.0
+
+        if day_of_month == 0:
+            return 0.0
+
+        # Promedio diario real
+        average_daily = total_so_far / day_of_month
+
+        # Días totales del mes actual
+        import calendar
+        total_days = calendar.monthrange(current_year, current_month)[1]
+
+        # Proyección esperada
+        expected_total = average_daily * total_days
+
+        return expected_total
+
+    except Exception as e:
+        print(f"❌ Error calculando ganancias esperadas: {e}")
+        return 0.0
+    finally:
+        conn.close()

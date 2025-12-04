@@ -136,7 +136,7 @@ Item {
                                 Layout.alignment: Qt.AlignVCenter
                             }
                             
-                            // Rol (Badge)
+                            // Rol (Badge) - MEJORADO CON BORDES
                             Item {
                                 Layout.preferredWidth: root.width * root.colRoleWidth
                                 Layout.alignment: Qt.AlignVCenter
@@ -147,12 +147,21 @@ Item {
                                     height: parent.height
                                     width: roleLabel.implicitWidth + 24
                                     radius: 13
-                                    color: getRolColor(modelData.nombre_rol)
+                                    
+                                    // Fondo Suave
+                                    color: getRolBgColor(modelData.nombre_rol)
+                                    
+                                    // Borde del mismo color que el texto (para resaltar)
+                                    border.width: 1
+                                    border.color: roleLabel.color
                                     
                                     Label { 
                                         id: roleLabel
-                                        text: modelData.nombre_rol
+                                        // Validación por si el rol viene nulo
+                                        text: modelData.nombre_rol ? modelData.nombre_rol : "---"
                                         anchors.centerIn: parent
+                                        
+                                        // Texto fuerte
                                         color: getRolTextColor(modelData.nombre_rol)
                                         font.pixelSize: 12; font.bold: true
                                     }
@@ -192,21 +201,30 @@ Item {
         }
     }
 
-    // Funciones de color (Badge)
-    function getRolColor(rolName) {
-        if (rolName === "Administrador") return "#DBEAFE"
-        if (rolName === "Vendedor") return "#D1FAE5"
-        if (rolName === "Contador") return "#FEF3C7"
-        if (rolName === "Almacenista") return "#F3E8FF"
+    // --- FUNCIONES DE COLOR MEJORADAS ---
+
+    // 1. Color de Fondo (Suave pero visible)
+    function getRolBgColor(rolName) {
+        if (!rolName) return "#F3F4F6"
+        const r = rolName.toString().toLowerCase()
+        
+        if (r.includes("admin")) return "#EFF6FF" // Azul muy claro
+        if (r.includes("vend"))  return "#ECFDF5" // Verde muy claro
+        if (r.includes("cont"))  return "#FFFBEB" // Amarillo muy claro
+        if (r.includes("alma"))  return "#FAF5FF" // Morado muy claro
         return "#F3F4F6"
     }
 
+    // 2. Color de Texto y Borde (Fuerte y saturado)
     function getRolTextColor(rolName) {
-        if (rolName === "Administrador") return "#1E40AF"
-        if (rolName === "Vendedor") return "#065F46"
-        if (rolName === "Contador") return "#92400E"
-        if (rolName === "Almacenista") return "#6B21A8"
-        return "#374151"
+        if (!rolName) return "#9CA3AF"
+        const r = rolName.toString().toLowerCase()
+        
+        if (r.includes("admin")) return "#2563EB" // Azul intenso
+        if (r.includes("vend"))  return "#059669" // Verde esmeralda
+        if (r.includes("cont"))  return "#D97706" // Ambar oscuro
+        if (r.includes("alma"))  return "#7C3AED" // Violeta fuerte
+        return "#4B5563"
     }
 
     Component.onCompleted: employersBackend.refreshData()

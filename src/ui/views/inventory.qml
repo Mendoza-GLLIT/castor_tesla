@@ -14,11 +14,31 @@ Item {
     readonly property color textMedium: "#6B7280"
     readonly property color accentPurple: "#6366F1"
 
-    // Diálogos
+    // Diálogos (Asumiendo que estos componentes existen en tu proyecto)
     NewProductDialog { id: myNewProductDialog }
     StockAdjustmentDialog { id: myStockDialog }
 
-    // Componente RoundedButton Corregido
+    // Diálogo de Eliminación
+    Dialog {
+        id: deleteDialog
+        title: "Eliminar Producto"
+        anchors.centerIn: parent
+        standardButtons: Dialog.Yes | Dialog.No
+        property var prodToDelete: null
+        
+        background: Rectangle { color: "white"; radius: 8; border.color: borderLight }
+        contentItem: ColumnLayout {
+            Label { 
+                text: "¿Estás seguro de eliminar este producto?\nSi tiene ventas históricas, fallará." 
+                color: textDark; padding: 20 
+            }
+        }
+        onAccepted: {
+            if (prodToDelete) inventoryCtrl.delete_product(prodToDelete.id_producto)
+        }
+    }
+
+    // Componente Botón Redondeado
     component RoundedButton: Button {
         id: control
         property color btnColor: accentPurple
@@ -34,52 +54,34 @@ Item {
             horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter
         }
         MouseArea { 
-            anchors.fill: parent
-            cursorShape: Qt.PointingHandCursor
-            
-            // 👇👇👇 CORRECCIÓN: Función explícita para evitar warning 👇👇👇
+            anchors.fill: parent; cursorShape: Qt.PointingHandCursor
             onPressed: (mouse) => { mouse.accepted = false } 
         }
     }
 
     // UI Principal
     Rectangle {
-        anchors.fill: parent
-        color: bgSecondary
+        anchors.fill: parent; color: bgSecondary
 
         Rectangle {
             width: Math.min(parent.width - 48, 1200) 
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: parent.top; anchors.bottom: parent.bottom; anchors.margins: 24
             color: bgPrimary; radius: 12
-            border.color: borderLight; border.width: 1
-            clip: true
+            border.color: borderLight; border.width: 1; clip: true
 
             ColumnLayout {
                 anchors.fill: parent; anchors.margins: 24; spacing: 24
 
+                // Cabecera y Buscador
                 ColumnLayout {
                     Layout.fillWidth: true; spacing: 16
-
-                    // Cabecera
                     RowLayout {
                         Layout.fillWidth: true; spacing: 16
-                        Label {
-                            text: "Productos"; font.pixelSize: 24; font.weight: Font.Bold; color: textDark
-                            Layout.fillWidth: true; Layout.alignment: Qt.AlignVCenter
-                        }
-                        RoundedButton {
-                            text: "+ Nuevo Producto"
-                            onClicked: myNewProductDialog.open()
-                        }
-                        RoundedButton {
-                            text: "📦 Ajustar Stock"
-                            btnColor: "#10B981" 
-                            onClicked: myStockDialog.open()
-                        }
+                        Label { text: "Productos"; font.pixelSize: 24; font.weight: Font.Bold; color: textDark; Layout.fillWidth: true }
+                        RoundedButton { text: "+ Nuevo Producto"; onClicked: myNewProductDialog.openForCreate() }
+                        RoundedButton { text: "📦 Ajustar Stock"; btnColor: "#10B981"; onClicked: myStockDialog.open() }
                     }
-                    
-                    // --- BUSCADOR CON FILTRO ---
                     RowLayout {
                         Layout.fillWidth: true; spacing: 16
                         Rectangle {
@@ -94,7 +96,6 @@ Item {
                                     placeholderTextColor: textMedium
                                     font.pixelSize: 14; color: textDark; background: null
                                     Layout.fillWidth: true; Layout.alignment: Qt.AlignVCenter
-                                    
                                     onTextChanged: productsModel.filter(text)
                                 }
                             }
@@ -102,26 +103,27 @@ Item {
                     }
                 }
                 
-                // Tabla
-                 ColumnLayout {
+                // TABLA CORREGIDA
+                ColumnLayout {
                     Layout.fillWidth: true; Layout.fillHeight: true; spacing: 0
 
-                    // Encabezados
+                    // 1. Encabezados
                     Rectangle {
                         Layout.fillWidth: true; height: 48; color: bgSecondary
                         Rectangle { width: parent.width; height: 1; color: borderLight; anchors.bottom: parent.bottom }
                         RowLayout {
-                            anchors.fill: parent; spacing: 0 
-                            Label { text: "CÓDIGO"; font.pixelSize: 12; font.weight: Font.DemiBold; color: textMedium; Layout.preferredWidth: 1.5; Layout.fillWidth: true; leftPadding: 16; verticalAlignment: Text.AlignVCenter }
-                            Label { text: "PRODUCTO"; font.pixelSize: 12; font.weight: Font.DemiBold; color: textMedium; Layout.preferredWidth: 3; Layout.fillWidth: true; leftPadding: 16; verticalAlignment: Text.AlignVCenter }
-                            Label { text: "DESCRIPCIÓN"; font.pixelSize: 12; font.weight: Font.DemiBold; color: textMedium; Layout.preferredWidth: 4; Layout.fillWidth: true; leftPadding: 16; verticalAlignment: Text.AlignVCenter }
-                            Label { text: "PRECIO"; font.pixelSize: 12; font.weight: Font.DemiBold; color: textMedium; Layout.preferredWidth: 1.5; Layout.fillWidth: true; horizontalAlignment: Text.AlignRight; rightPadding: 16; verticalAlignment: Text.AlignVCenter }
-                            Label { text: "STOCK"; font.pixelSize: 12; font.weight: Font.DemiBold; color: textMedium; Layout.preferredWidth: 1.5; Layout.fillWidth: true; horizontalAlignment: Text.AlignRight; rightPadding: 32; verticalAlignment: Text.AlignVCenter }
-                            Item { width: 40 } 
+                            anchors.fill: parent; spacing: 0
+                            // NOTA: Todos los encabezados tienen Layout.fillWidth: true para definir la grilla
+                            Label { text: "CÓDIGO"; font.weight: Font.DemiBold; color: textMedium; Layout.preferredWidth: 1.5; Layout.fillWidth: true; leftPadding: 16 }
+                            Label { text: "PRODUCTO"; font.weight: Font.DemiBold; color: textMedium; Layout.preferredWidth: 3; Layout.fillWidth: true; leftPadding: 16 }
+                            Label { text: "DESCRIPCIÓN"; font.weight: Font.DemiBold; color: textMedium; Layout.preferredWidth: 4; Layout.fillWidth: true; leftPadding: 16 }
+                            Label { text: "PRECIO"; font.weight: Font.DemiBold; color: textMedium; Layout.preferredWidth: 1.5; Layout.fillWidth: true; horizontalAlignment: Text.AlignRight; rightPadding: 16 }
+                            Label { text: "STOCK"; font.weight: Font.DemiBold; color: textMedium; Layout.preferredWidth: 1.5; Layout.fillWidth: true; horizontalAlignment: Text.AlignRight; rightPadding: 32 }
+                            Label { text: "ACCIONES"; font.weight: Font.DemiBold; color: textMedium; Layout.preferredWidth: 1.5; Layout.fillWidth: true; horizontalAlignment: Text.AlignRight; rightPadding: 16 }
                         }
                     }
 
-                    // Lista
+                    // 2. Lista (Rows)
                     ListView {
                         id: productList
                         Layout.fillWidth: true; Layout.fillHeight: true; clip: true
@@ -129,37 +131,89 @@ Item {
                         boundsBehavior: Flickable.StopAtBounds
 
                         delegate: Rectangle {
-                            // 👇👇👇 CORRECCIÓN: Evitamos error de 'width of null' 👇👇👇
-                            width: productList.width 
-                            height: 64; color: bgPrimary
-                            
+                            width: productList.width; height: 64; color: bgPrimary
                             Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: 1; color: borderLight }
+                            
                             RowLayout {
                                 anchors.fill: parent; spacing: 0
-                                Label { text: model.codigo; font.pixelSize: 14; font.weight: Font.Medium; color: textDark; Layout.preferredWidth: 1.5; Layout.fillWidth: true; Layout.alignment: Qt.AlignVCenter; leftPadding: 16; elide: Text.ElideRight }
+                                
+                                // Col 1: CÓDIGO (1.5)
+                                Label { 
+                                    text: model.codigo 
+                                    font.weight: Font.Medium; color: textDark 
+                                    Layout.preferredWidth: 1.5; Layout.fillWidth: true; leftPadding: 16 
+                                    verticalAlignment: Text.AlignVCenter
+                                }
+                                
+                                // Col 2: PRODUCTO (3)
                                 Column {
-                                    Layout.preferredWidth: 3; Layout.fillWidth: true; Layout.alignment: Qt.AlignVCenter; leftPadding: 16 
-                                    Label { text: model.nombre; font.pixelSize: 14; font.weight: Font.Medium; color: textDark; width: parent.width - 32; elide: Text.ElideRight }
-                                    Label { text: "Electrónica"; font.pixelSize: 12; color: textMedium; width: parent.width - 32; elide: Text.ElideRight }
+                                    Layout.preferredWidth: 3; Layout.fillWidth: true; leftPadding: 16 
+                                    Layout.alignment: Qt.AlignVCenter
+                                    Label { text: model.nombre; font.weight: Font.Medium; color: textDark; width: parent.width - 32; elide: Text.ElideRight }
+                                    Label { text: "Electrónica"; font.pixelSize: 12; color: textMedium }
                                 }
-                                Label { text: model.descripcion ? model.descripcion : "Sin descripción"; font.pixelSize: 13; color: textMedium; Layout.preferredWidth: 4; Layout.fillWidth: true; Layout.alignment: Qt.AlignVCenter; leftPadding: 16; elide: Text.ElideRight }
-                                Label { text: model.precio; font.pixelSize: 14; font.weight: Font.Medium; color: textDark; Layout.preferredWidth: 1.5; Layout.fillWidth: true; horizontalAlignment: Text.AlignRight; Layout.alignment: Qt.AlignVCenter; rightPadding: 16 }
+                                
+                                // Col 3: DESCRIPCIÓN (4)
+                                Label { 
+                                    text: model.descripcion ? model.descripcion : "---"
+                                    color: textMedium; 
+                                    Layout.preferredWidth: 4; Layout.fillWidth: true 
+                                    leftPadding: 16; elide: Text.ElideRight 
+                                    verticalAlignment: Text.AlignVCenter
+                                }
+                                
+                                // Col 4: PRECIO (1.5)
+                                Label { 
+                                    text: model.precio 
+                                    font.weight: Font.Medium; color: textDark 
+                                    Layout.preferredWidth: 1.5; Layout.fillWidth: true 
+                                    horizontalAlignment: Text.AlignRight; rightPadding: 16 
+                                    verticalAlignment: Text.AlignVCenter
+                                }
+                                
+                                // Col 5: STOCK (1.5) - Alineado a la derecha usando Spacer
                                 RowLayout {
-                                    Layout.preferredWidth: 1.5; Layout.fillWidth: true; Layout.alignment: Qt.AlignRight | Qt.AlignVCenter; spacing: 8; anchors.rightMargin: 16 
-                                    Item { Layout.fillWidth: true }
-                                    Rectangle { width: 8; height: 8; radius: 4; color: model.stock > 10 ? "#10B981" : (model.stock > 0 ? "#F59E0B" : "#EF4444") }
-                                    Label { text: model.stock + " un."; font.pixelSize: 14; font.weight: Font.Medium; color: textDark; rightPadding: 16 }
-                                }
-                                Button {
-                                    text: "•••"; font.pixelSize: 20; width: 40; height: 40; flat: true; Layout.alignment: Qt.AlignVCenter
-                                    contentItem: Text { text: parent.text; color: textMedium; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; bottomPadding: 8 }
-                                    background: Rectangle { color: parent.hovered ? bgSecondary : "transparent"; radius: 6 }
+                                    Layout.preferredWidth: 1.5; Layout.fillWidth: true 
+                                    spacing: 8 
                                     
-                                    // 👇👇👇 CORRECCIÓN: Función explícita para evitar warning 👇👇👇
-                                    MouseArea { 
-                                        anchors.fill: parent
-                                        cursorShape: Qt.PointingHandCursor
-                                        onPressed: (mouse) => { mouse.accepted = false } 
+                                    // Espaciador: Empuja el contenido a la derecha sin romper la celda
+                                    Item { Layout.fillWidth: true } 
+                                    
+                                    Rectangle { width: 8; height: 8; radius: 4; color: model.stock > 10 ? "#10B981" : (model.stock > 0 ? "#F59E0B" : "#EF4444") }
+                                    
+                                    Label { 
+                                        text: model.stock + " un."; 
+                                        font.weight: Font.Medium; color: textDark 
+                                        rightPadding: 32 // Coincide con el header
+                                        verticalAlignment: Text.AlignVCenter
+                                    }
+                                }
+
+                                // Col 6: ACCIONES (1.5) - Alineado a la derecha usando Spacer
+                                RowLayout {
+                                    Layout.preferredWidth: 1.5; Layout.fillWidth: true
+                                    spacing: 0
+                                    
+                                    // Espaciador
+                                    Item { Layout.fillWidth: true }
+                                    
+                                    Row {
+                                        spacing: 8
+                                        rightPadding: 16 // Coincide con el header
+                                        
+                                        Button {
+                                            text: "✎"; width: 32; height: 32
+                                            background: Rectangle { color: parent.hovered ? "#DBEAFE" : "transparent"; radius: 6; border.color: "#BFDBFE" }
+                                            contentItem: Text { text: parent.text; color: "#2563EB"; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+                                            onClicked: myNewProductDialog.openForEdit(model)
+                                        }
+                                        
+                                        Button {
+                                            text: "🗑"; width: 32; height: 32
+                                            background: Rectangle { color: parent.hovered ? "#FEE2E2" : "transparent"; radius: 6; border.color: "#FECACA" }
+                                            contentItem: Text { text: parent.text; color: "#DC2626"; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+                                            onClicked: { deleteDialog.prodToDelete = model; deleteDialog.open() }
+                                        }
                                     }
                                 }
                             }

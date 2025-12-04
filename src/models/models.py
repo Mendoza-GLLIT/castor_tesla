@@ -123,3 +123,38 @@ class ProductModel(QAbstractListModel):
                 idx = self.index(i)
                 self.dataChanged.emit(idx, idx, [ProductModel.StockRole])
                 break
+            
+    def update_product_ui(self, id_producto, nombre, descripcion, precio):
+        """Actualiza nombre, descripción y precio en tiempo real."""
+        # 1. Actualizar memoria maestra
+        for prod in self._all_products:
+            if prod.get("id_producto") == id_producto:
+                prod["nombre"] = nombre
+                prod["descripcion"] = descripcion
+                prod["precio"] = str(precio) # Guardamos como string o float según tu lógica
+                break
+
+        # 2. Actualizar vista visible
+        for i, prod in enumerate(self._products):
+            if prod.get("id_producto") == id_producto:
+                idx = self.index(i)
+                # Avisamos que cambiaron Nombre, Descripción y Precio
+                self.dataChanged.emit(idx, idx, [
+                    ProductModel.NombreRole, 
+                    ProductModel.DescripcionRole, 
+                    ProductModel.PrecioRole
+                ])
+                break
+
+    def delete_product_ui(self, id_producto):
+        """Elimina la fila visualmente con animación."""
+        # 1. Eliminar de la maestra
+        self._all_products = [p for p in self._all_products if p.get("id_producto") != id_producto]
+
+        # 2. Eliminar de la visible (buscando el índice)
+        for i, prod in enumerate(self._products):
+            if prod.get("id_producto") == id_producto:
+                self.beginRemoveRows(QModelIndex(), i, i)
+                self._products.pop(i)
+                self.endRemoveRows()
+                break

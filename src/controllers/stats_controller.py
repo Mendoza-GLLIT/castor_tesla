@@ -1,5 +1,5 @@
 from PySide6.QtCore import QObject, Slot, Signal, Property
-from src.database.stats_repo import get_monthly_revenue, get_top_products, get_top_clients, get_kpis, get_sales_comparison
+from src.database.stats_repo import get_monthly_revenue, get_top_products, get_top_clients, get_kpis, get_sales_comparison,get_sales_comparison, get_expected_revenue
 
 class StatsController(QObject):
     dataChanged = Signal()
@@ -16,6 +16,8 @@ class StatsController(QObject):
         self._sales_curr_month = 0.0
         self._sales_last_month = 0.0
         self._growth_percent = 0.0
+        self._expected_revenue = 0.0
+
         
         self.refreshData()
 
@@ -43,6 +45,11 @@ class StatsController(QObject):
 
     @Property(float, notify=dataChanged)
     def growthPercent(self): return self._growth_percent
+    
+    @Property(float, notify=dataChanged)
+    def expectedRevenue(self):
+        return self._expected_revenue
+
 
     @Slot()
     def refreshData(self):
@@ -64,5 +71,8 @@ class StatsController(QObject):
             self._growth_percent = ((curr - last) / last) * 100
         else:
             self._growth_percent = 100.0 if curr > 0 else 0.0
+            
         
+        self._expected_revenue = get_expected_revenue()
+
         self.dataChanged.emit()

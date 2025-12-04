@@ -24,7 +24,6 @@ El proyecto sigue una arquitectura **MVC (Modelo-Vista-Controlador)** estricta, 
 castor_tesla/
 │
 ├── main.py                     # 🚀 Punto de entrada (Inicia la app, carga estilos y rutas)
-├── init_db.py                  # 🛠️ Script para crear/resetear las tablas de la BD
 ├── requirements.txt            # 📦 Lista de librerías (PySide6, SQLAlchemy, psycopg2, etc.)
 ├── .gitignore                  # 🙈 Archivos que Git debe ignorar (como __pycache__)
 ├── README.md                   # 📄 Documentación del proyecto
@@ -39,7 +38,8 @@ castor_tesla/
     │   ├── user_repo.py        # Consultas tabla USUARIO
     │   ├── product_repo.py     # Consultas tabla PRODUCTO
     │   ├── sales_repo.py       # Consultas tabla VENTA y DETALLE
-    │   ├── clients_repo.py     # Consultas tabla CLIENTE
+    │   ├── clients_repo.py     # Consultas tabla CLIENTE}
+    │   ├── messages_repo.py    # Consultas tabla MENSAJES
     │   ├── assets_repo.py      # Consultas tabla ACTIVO_FIJO
     │   └── stats_repo.py       # Consultas complejas para Estadísticas
     │
@@ -54,6 +54,7 @@ castor_tesla/
     │   ├── inventory_controller.py # Altas, bajas y stock de productos
     │   ├── employers_controller.py # CRUD de empleados
     │   ├── clients_controller.py   # CRUD de clientes
+    │   ├── messages_controller.py  # control de mensajes
     │   ├── assets_controller.py    # CRUD de activos fijos
     │   └── stats_controller.py     # Cálculo de KPIs y gráficas
     │
@@ -61,9 +62,7 @@ castor_tesla/
         ├── login.qml           # Pantalla de inicio de sesión
         ├── dashboard.qml       # Contenedor principal (StackLayout)
         ├── sidebar.qml         # Menú lateral de navegación
-        │
-        ├── components/         # 🧩 Componentes Reutilizables
-        │   └── SidebarButton.qml   # Botón personalizado del menú con icono
+        ├── SidebarButton.qml   # Botón personalizado del menú con icono
         │
         └── views/              # 📄 Páginas y Formularios
             ├── pos.qml                 # Vista: Punto de Venta
@@ -72,6 +71,7 @@ castor_tesla/
             ├── employers.qml           # Vista: Gestión de Empleados
             ├── clients.qml             # Vista: Cartera de Clientes
             ├── assets.qml              # Vista: Activos Fijos
+            ├── messages.qml            # Vista: Alertas
             ├── statistics.qml          # Vista: Dashboard y Gráficas
             │
             ├── NewProductDialog.qml      # Modal: Crear Producto

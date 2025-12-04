@@ -77,7 +77,7 @@ Rectangle {
                 icon: "boxes"
                 text: "Inventario"
                 isActive: sidebar.currentView === "views/inventory.qml"
-                visible: userRole === "Administrador" || userRole === "Almacenista" || userRole === "Contador" || userRole === "Vendedor"
+                visible: userRole === "Administrador" || userRole === "Almacenista" 
                 onClicked: {
                     sidebar.currentView = "views/inventory.qml"
                     viewLoader.source = "views/inventory.qml"
@@ -94,7 +94,7 @@ Rectangle {
                 icon: "clients"
                 text: "Clientes"
                 isActive: sidebar.currentView === "views/clients.qml" // Asegúrate de tener esta vista o cámbiala
-                visible: userRole === "Administrador" || userRole === "Almacenista" || userRole === "Contador" || userRole === "Vendedor"
+                visible: userRole === "Administrador" 
                 onClicked: {
                     sidebar.currentView = "views/clients.qml"
                     viewLoader.source = "views/clients.qml" 
@@ -118,7 +118,7 @@ Rectangle {
                 icon: "assets"
                 text: "Activos"
                 isActive: sidebar.currentView === "views/assets.qml"
-                visible: userRole === "Administrador" || userRole === "Almacenista" || userRole === "Contador" || userRole === "Vendedor"
+                visible: userRole === "Administrador" || userRole === "Almacenista" 
                 onClicked: {
                     sidebar.currentView = "views/assets.qml"
                     viewLoader.source = "views/assets.qml"
@@ -130,10 +130,21 @@ Rectangle {
                 icon: "stats"
                 text: "Estadisticas"
                 isActive: sidebar.currentView === "views/statistics.qml"
-                visible: userRole === "Administrador" || userRole === "Almacenista" || userRole === "Contador" || userRole === "Vendedor"
+                visible: userRole === "Administrador" || userRole === "Contador" || userRole === "Vendedor"
                 onClicked: {
                     sidebar.currentView = "views/statistics.qml"
                     viewLoader.source = "views/statistics.qml"
+                }
+            }
+
+            SidebarButton {
+                icon: "alert_folder"
+                text: "Alertas"
+                isActive: sidebar.currentView === "views/messages.qml"
+                visible: userRole === "Administrador" || userRole === "Almacenista" || userRole === "Contador"
+                onClicked: {
+                    sidebar.currentView = "views/messages.qml"
+                    viewLoader.source = "views/messages.qml"
                 }
             }
             

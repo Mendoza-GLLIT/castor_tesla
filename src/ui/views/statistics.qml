@@ -72,7 +72,6 @@ Item {
                     title: "Ingresos del Mes"
                     value: "$" + statsBackend.salesCurrentMonth.toFixed(2)
                     icon: "📈"
-                    // Lógica para mostrar crecimiento
                     property bool isPositive: statsBackend.growthPercent >= 0
                     trendText: (isPositive ? "▲ " : "▼ ") + Math.abs(statsBackend.growthPercent).toFixed(1) + "% vs mes anterior"
                     trendColor: isPositive ? success : danger
@@ -86,6 +85,28 @@ Item {
                     trendText: "Activos en almacén"
                     trendColor: accent
                 }
+
+                // CARD 4: Proyección del Mes (AGREGADA)
+                KpiCard {
+                    // Cálculos internos
+                    property int day: new Date().getDate()
+                    property int totalDays: {
+                        var d = new Date()
+                        return new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate()
+                    }
+                    property real projected: {
+                        var avg = 0
+                        if (day > 0)
+                            avg = statsBackend.salesCurrentMonth / day
+                        return avg * totalDays
+                    }
+
+                    title: "Proyección del Mes"
+                    value: "$" + projected.toFixed(2)
+                    icon: "🔮"
+                    trendText: "Estimado según ritmo actual"
+                    trendColor: accent
+                }
             }
 
             // --- 3. GRÁFICA DE LÍNEA CURVA (AREA CHART) ---
@@ -94,7 +115,6 @@ Item {
                 Layout.preferredHeight: 350
                 Layout.leftMargin: 24; Layout.rightMargin: 24
                 color: cardBg; radius: 16
-                // Sombra suave (hack simple con borde grueso transparente)
                 border.color: "#E5E7EB"; border.width: 1
 
                 ColumnLayout {
@@ -102,32 +122,24 @@ Item {
                     
                     Label { text: "Tendencia Anual de Ventas"; font.bold: true; font.pixelSize: 16; color: textMain }
                     
-                    // Contenedor de la gráfica
                     Item {
                         id: chartArea
                         Layout.fillWidth: true; Layout.fillHeight: true
                         
-                        // Dibujo de la línea y el relleno
                         Shape {
                             anchors.fill: parent
-                            // Antialiasing para que la curva se vea suave (importante)
                             layer.enabled: true
                             layer.samples: 4
 
-                            // 1. Relleno Degradado (Fondo)
                             ShapePath {
                                 strokeWidth: 0
                                 fillGradient: LinearGradient {
                                     x1: 0; y1: 0; x2: 0; y2: chartArea.height
-                                    GradientStop { position: 0; color: "#406366F1" } // Morado transparente
-                                    GradientStop { position: 1; color: "#006366F1" } // Transparente total
+                                    GradientStop { position: 0; color: "#406366F1" }
+                                    GradientStop { position: 1; color: "#006366F1" }
                                 }
                                 startX: 0; startY: chartArea.height
-                                
-                                PathLine { x: 0; y: getY(0) } // Primer punto
-                                
-                                // Generamos la curva dinámicamente
-                                // Nota: Usamos Repeater no visual para lógica o bucle manual, aquí haré un path dinámico simple
+                                PathLine { x: 0; y: getY(0) }
                                 PathCurve { x: getX(1); y: getY(1) }
                                 PathCurve { x: getX(2); y: getY(2) }
                                 PathCurve { x: getX(3); y: getY(3) }
@@ -139,12 +151,10 @@ Item {
                                 PathCurve { x: getX(9); y: getY(9) }
                                 PathCurve { x: getX(10); y: getY(10) }
                                 PathCurve { x: getX(11); y: getY(11) }
-
-                                PathLine { x: chartArea.width; y: chartArea.height } // Bajar al suelo
-                                PathLine { x: 0; y: chartArea.height } // Cerrar forma
+                                PathLine { x: chartArea.width; y: chartArea.height }
+                                PathLine { x: 0; y: chartArea.height }
                             }
 
-                            // 2. La Línea Maestra (Trazo sólido encima)
                             ShapePath {
                                 strokeColor: accent
                                 strokeWidth: 3
@@ -166,7 +176,6 @@ Item {
                             }
                         }
 
-                        // Puntos interactivos (Círculos encima de la línea)
                         Repeater {
                             model: 12
                             delegate: Rectangle {
@@ -177,7 +186,6 @@ Item {
                                 y: getY(index) - height/2
                                 z: 10
                                 
-                                // Tooltip al pasar el mouse
                                 MouseArea {
                                     anchors.fill: parent; hoverEnabled: true
                                     onEntered: parent.scale = 1.5
@@ -191,7 +199,6 @@ Item {
                         }
                     }
                     
-                    // Etiquetas Eje X (Meses)
                     RowLayout {
                         Layout.fillWidth: true
                         Repeater {
@@ -205,20 +212,18 @@ Item {
                 }
             }
 
-            // --- 4. LISTAS TOP (Estilo Tabla Limpia) ---
+            // --- 4. LISTAS TOP ---
             RowLayout {
                 Layout.fillWidth: true; Layout.preferredHeight: 320
                 Layout.leftMargin: 24; Layout.rightMargin: 24; Layout.bottomMargin: 24
                 spacing: 24
 
-                // Top Productos
                 TopListCard {
                     title: "🔥 Top Productos"
                     modelData: statsBackend.topProductsModel
                     isProduct: true
                 }
 
-                // Top Clientes
                 TopListCard {
                     title: "💎 Top Clientes"
                     modelData: statsBackend.topClientsModel
@@ -228,18 +233,15 @@ Item {
         }
     }
 
-    // --- FUNCIONES DE GRÁFICA ---
+    // FUNCIONES DE GRÁFICA
     function getX(index) {
-        // Divide el ancho disponible entre 11 segmentos (12 puntos)
         var step = chartArea.width / 11
         return step * index
     }
 
     function getY(index) {
-        // Regla de 3 inversa: Mayor valor = Y más cercano a 0 (arriba)
         var val = statsBackend.revenueData[index]
         var max = statsBackend.maxRevenue
-        // Dejamos un margen del 10% arriba para que no toque el techo
         return chartArea.height - ((val / max) * (chartArea.height * 0.9))
     }
 
@@ -247,7 +249,7 @@ Item {
         return ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"][idx]
     }
 
-    // --- COMPONENTES INTERNOS REUTILIZABLES ---
+    // COMPONENTES INTERNOS
 
     component KpiCard: Rectangle {
         property string title
@@ -297,7 +299,6 @@ Item {
                     width: parent.width; height: 40; color: "transparent"
                     RowLayout {
                         anchors.fill: parent
-                        // Icono simple
                         Rectangle {
                             width: 32; height: 32; radius: 8; color: isProduct ? "#EEF2FF" : "#ECFDF5"
                             Label { text: isProduct ? "📦" : "👤"; anchors.centerIn: parent }
@@ -313,7 +314,6 @@ Item {
                             font.bold: true 
                         }
                     }
-                    // Línea separadora sutil
                     Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: 1; color: "#F9FAFB" }
                 }
             }
