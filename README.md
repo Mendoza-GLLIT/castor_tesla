@@ -1,23 +1,22 @@
-🔷 Castor Tesla - Sistema de Punto de Venta (POS)
+🔷 **Castor Tesla - Sistema de Punto de Venta (POS)**
 
 Castor Tesla es un sistema integral de gestión de inventario y Punto de Venta diseñado para ofrecer una experiencia de usuario moderna, fluida y eficiente.
 
 Desarrollado con Python y Qt (QML), el sistema permite administrar productos, realizar ventas en tiempo real y visualizar historiales de transacciones de manera intuitiva. El proyecto sigue una arquitectura MVC (Modelo-Vista-Controlador) estricta, separando la lógica de negocio, la gestión de datos y la interfaz gráfica para garantizar un código limpio y escalable.
 
-🚀 Tecnologías Utilizadas
+---
 
-Lenguaje: Python 3.10+
+## 🚀 **Tecnologías Utilizadas**
 
-Interfaz Gráfica (GUI): PySide6 (Qt for Python) con QML
+- **Lenguaje:** Python 3.10+
+- **Interfaz Gráfica (GUI):** PySide6 (Qt for Python) con QML
+- **Base de Datos:** PostgreSQL
+- **ORM y Conectores:** SQLAlchemy y Psycopg2
+- **Arquitectura:** MVC
 
-Base de Datos: PostgreSQL
+---
 
-ORM y Conectores: SQLAlchemy y Psycopg2
-
-Arquitectura: MVC
-
-📂 Estructura del Proyecto
-
+## 📂 **Estructura del Proyecto**
 castor_tesla/
 │
 ├── main.py                     # Punto de entrada (Inicia la app, carga estilos y rutas)
@@ -77,27 +76,23 @@ castor_tesla/
             ├── ClientFormDialog.qml      # Modal: Crear/Editar Cliente
             └── AssetFormDialog.qml       # Modal: Crear/Editar Activo
 
-
-⚙️ Guía de Instalación y Despliegue
+## ⚙️ **Guía de Instalación y Despliegue**
 
 Para mantener el proyecto limpio, se recomienda crear el Entorno Virtual fuera de la carpeta del código fuente.
 
-1. Pre-requisitos
+### 1. Pre-requisitos
 
-Tener instalado Python 3.x.
+- Tener instalado **Python 3.x**.
+- Tener instalado **PostgreSQL** y el servicio en ejecución.
+- Tener creada la base de datos llamada **CastorTesla** en tu servidor local.
 
-Tener instalado PostgreSQL y el servicio en ejecución.
-
-Tener creada la base de datos llamada CastorTesla en tu servidor local.
-
-2. Creación del Entorno Virtual
+### 2. Creación del Entorno Virtual
 
 Abre tu terminal y ubícate en la carpeta padre del proyecto:
 
+
 # Crear el entorno virtual llamado 'env'
 python -m venv env
-
-
 Activar el entorno:
 
 Windows: .\env\Scripts\activate
@@ -105,14 +100,11 @@ Windows: .\env\Scripts\activate
 Mac/Linux: source env/bin/activate
 
 3. Instalación de Dependencias
-
 Con el entorno virtual activo, ingresa a la carpeta del proyecto e instala las librerías:
 
+
 pip install -r requirements.txt
-
-
 4. Configuración de Base de Datos
-
 Verifica que el archivo src/database/connection.py tenga las credenciales correctas:
 
 User: postgres (o tu usuario configurado)
@@ -124,69 +116,13 @@ Port: 5432
 Database: CastorTesla
 
 5. Ejecución del Proyecto
-
 Ejecuta el archivo principal para iniciar el sistema:
 
 python main.py
-
-
 👤 Usuarios de Prueba
-
 Credenciales de acceso predeterminadas para administradores:
 
-Usuario
-
-Contraseña
-
-Mendo
-
-23310035
-
-Valente
-
-23310012
-
-Dulce
-
-23310004
-
-🤝 Guía de Contribución y Flujo de Trabajo Git
-
-Para mantener el orden en el proyecto y evitar conflictos en el código, seguimos estas reglas estrictas de control de versiones.
-
-🚫 Regla de Oro
-
-NUNCA trabajar directamente sobre la rama main.
-La rama main es sagrada; solo debe contener código funcional y probado.
-
-1. Estrategia de Ramas (Branches)
-
-Cada nueva funcionalidad o corrección debe realizarse en su propia rama.
-
-Convención de Nombres: tipo/nombre-descriptivo
-
-feature/: Para nuevas funcionalidades (ej: feature/login-screen).
-
-fix/: Para arreglar errores (ej: fix/error-calculo-iva).
-
-docs/: Para cambios en documentación.
-
-refactor/: Para mejorar código sin cambiar funcionalidad.
-
-Crear una rama:
-
-git checkout main
-git pull origin main
-git checkout -b feature/mi-nueva-funcionalidad
-
-
-2. Reglas para Commits
-
-Los mensajes deben ser claros, en imperativo presente y atómicos.
-
-✅ Correcto: Agrega validación de contraseña en Login
-
-❌ Incorrecto: arreglando cosas, final, cambios
-
-git add .
-git commit -m "Agrega función para calcular total en carrito"
+Usuario	Contraseña
+Mendo	23310035
+Valente	23310012
+Dulce	23310004
